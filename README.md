@@ -85,6 +85,11 @@ team in the project settings.
 Issues and pull requests are welcome. Please read `CONTRIBUTING.md` first —
 contributions need a short licence grant so the project can stay flexible.
 
+## Support
+
+Toki is free, without ads and without tracking. If it saves you time, you can support its
+development with [a small donation via PayPal](https://www.paypal.com/donate/?hosted_button_id=W3MA5RQWWJS2U).
+
 ## Licence
 
 The source code is licensed under the [Mozilla Public License 2.0](LICENSE).
