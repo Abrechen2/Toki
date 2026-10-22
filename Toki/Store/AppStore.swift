@@ -87,6 +87,45 @@ final class AppStore {
         transaction { try write(record, delete: isDefault) }
     }
 
+    func category(_ id: UUID?) -> EntryCategory? {
+        guard let id else { return nil }
+        return settings.categories.first { $0.id == id }
+    }
+
+    /// Adds or changes a category; its rule is re-applied to all its entries in the same save.
+    func saveCategory(_ category: EntryCategory) {
+        var new = settings
+        if let index = new.categories.firstIndex(where: { $0.id == category.id }) {
+            new.categories[index] = category
+        } else {
+            new.categories.append(category)
+        }
+        let changed = EntryCategory.apply(category, to: sortedDays).filter { days[$0.date] != $0 }
+        settings = new
+        for record in changed { days[record.date] = record }
+        transaction {
+            try writeSettings(new)
+            for record in changed { try write(record, delete: false) }
+        }
+    }
+
+    /// Removes the label; entries keep their times and kind, so no account changes.
+    func deleteCategory(_ id: UUID) {
+        var new = settings
+        new.categories.removeAll { $0.id == id }
+        let changed = EntryCategory.remove(id, from: sortedDays).filter { days[$0.date] != $0 }
+        settings = new
+        for record in changed { days[record.date] = record }
+        transaction {
+            try writeSettings(new)
+            for record in changed { try write(record, delete: false) }
+        }
+    }
+
+    func entryCount(in categoryID: UUID) -> Int {
+        days.values.reduce(0) { $0 + $1.entries.filter { $0.categoryID == categoryID }.count }
+    }
+
     /// One-tap booking: adds a work entry with the schedule's default times.
     func addStandardWorkday(_ date: LocalDate) {
         addWorkday(date, entry: settings.schedule.workEntry(for: date))

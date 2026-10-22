@@ -26,6 +26,10 @@ struct MoreView: View {
                               systemImage: "briefcase")
                     }
                     .accessibilityIdentifier("editJob")
+                    NavigationLink { CategoriesView() } label: {
+                        Label("Kategorien", systemImage: "tag")
+                    }
+                    .accessibilityIdentifier("categories")
                     NavigationLink { OfficeSettingsView() } label: {
                         Label {
                             VStack(alignment: .leading, spacing: 2) {

@@ -8,16 +8,18 @@ public enum EntryKind: String, Codable, CaseIterable, Sendable {
     case publicHoliday
     case specialLeave
     case overtimeReduction
+    /// Time outside the normal account (category that does not count as work time), e.g. work abroad paid separately.
+    case separateTime
 
     /// Day types that set the day's target to 0 (myTime stores target 0 on those days).
     public var isAbsence: Bool {
         switch self {
         case .vacation, .sick, .childSick, .publicHoliday, .specialLeave: return true
-        case .work, .overtimeReduction: return false
+        case .work, .overtimeReduction, .separateTime: return false
         }
     }
 
-    public var hasTimes: Bool { self == .work }
+    public var hasTimes: Bool { self == .work || self == .separateTime }
 
     /// German export name, matching myTime's `nameOnExport`.
     public var exportName: String {
@@ -29,6 +31,7 @@ public enum EntryKind: String, Codable, CaseIterable, Sendable {
         case .publicHoliday: return "Feiertag"
         case .specialLeave: return "Sonderurlaub"
         case .overtimeReduction: return "Überstundenabbau"
+        case .separateTime: return "Sonderzeit"
         }
     }
 }
@@ -45,6 +48,8 @@ public struct TimeEntry: Codable, Hashable, Identifiable, Sendable {
     public var origin: EntryOrigin?
     /// Share of the day for day types, e.g. 0.5 for half a vacation day; nil = whole day.
     public var dayFraction: Double?
+    /// Optional category (see `EntryCategory`); nil = plain work.
+    public var categoryID: UUID?
 
     public init(id: UUID = UUID(), kind: EntryKind, startSeconds: Int? = nil, endSeconds: Int? = nil,
                 breakSeconds: Int = 0, note: String = "", origin: EntryOrigin? = nil, dayFraction: Double? = nil) {
@@ -73,9 +78,19 @@ public struct TimeEntry: Codable, Hashable, Identifiable, Sendable {
         return TimeEntry(kind: .work, startSeconds: start, endSeconds: end, breakSeconds: breakSeconds, note: note)
     }
 
-    public var workedSeconds: Int {
+    /// Length of a timed entry, also for separate time.
+    public var durationSeconds: Int {
         guard kind.hasTimes, let start = startSeconds, let end = endSeconds else { return 0 }
         return max(0, end - start - breakSeconds)
+    }
+
+    /// Time that counts for the normal account; separate time counts 0.
+    public var workedSeconds: Int { kind == .work ? durationSeconds : 0 }
+
+    /// Labels a timed entry with a category; the category decides whether it is normal work.
+    public mutating func assign(_ category: EntryCategory) {
+        categoryID = category.id
+        if kind.hasTimes { kind = category.countsAsWorkTime ? .work : .separateTime }
     }
 }
 
@@ -206,6 +221,45 @@ public struct VacationAnchor: Codable, Hashable, Sendable {
     }
 }
 
+/// User-defined label for timed entries. A category that does not count as work time keeps its
+/// entries out of target, actual time and overtime (they get the kind `separateTime`).
+public struct EntryCategory: Codable, Hashable, Sendable, Identifiable {
+    public var id: UUID
+    public var name: String
+    /// Index into the app's colour palette.
+    public var colorIndex: Int
+    public var countsAsWorkTime: Bool
+
+    public init(id: UUID = UUID(), name: String, colorIndex: Int, countsAsWorkTime: Bool) {
+        self.id = id
+        self.name = name
+        self.colorIndex = colorIndex
+        self.countsAsWorkTime = countsAsWorkTime
+    }
+
+    /// Re-applies the category's rule to every entry that carries it (after the rule changed).
+    public static func apply(_ category: EntryCategory, to days: [DayRecord]) -> [DayRecord] {
+        days.map { day in
+            var copy = day
+            for index in copy.entries.indices where copy.entries[index].categoryID == category.id {
+                copy.entries[index].assign(category)
+            }
+            return copy
+        }
+    }
+
+    /// Drops the label only; the entries keep their kind, so no account changes.
+    public static func remove(_ id: UUID, from days: [DayRecord]) -> [DayRecord] {
+        days.map { day in
+            var copy = day
+            for index in copy.entries.indices where copy.entries[index].categoryID == id {
+                copy.entries[index].categoryID = nil
+            }
+            return copy
+        }
+    }
+}
+
 public struct Settings: Codable, Hashable, Sendable {
     public var jobName: String
     public var initialOvertimeSeconds: Int
@@ -215,17 +269,36 @@ public struct Settings: Codable, Hashable, Sendable {
     public var holidayRegion: HolidayRegion
     /// Office for automatic entries by location; nil = off.
     public var office: OfficeLocation?
+    public var categories: [EntryCategory]
 
     public init(jobName: String, initialOvertimeSeconds: Int, anchor: VacationAnchor,
                 entitlementPerYear: Double, schedule: WeekSchedule, holidayRegion: HolidayRegion,
-                office: OfficeLocation? = nil) {
+                office: OfficeLocation? = nil, categories: [EntryCategory] = []) {
         self.office = office
+        self.categories = categories
         self.jobName = jobName
         self.initialOvertimeSeconds = initialOvertimeSeconds
         self.anchor = anchor
         self.entitlementPerYear = entitlementPerYear
         self.schedule = schedule
         self.holidayRegion = holidayRegion
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case jobName, initialOvertimeSeconds, anchor, entitlementPerYear, schedule, holidayRegion, office, categories
+    }
+
+    /// Fields added later decode with defaults, so older backups keep working.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        jobName = try c.decode(String.self, forKey: .jobName)
+        initialOvertimeSeconds = try c.decode(Int.self, forKey: .initialOvertimeSeconds)
+        anchor = try c.decode(VacationAnchor.self, forKey: .anchor)
+        entitlementPerYear = try c.decode(Double.self, forKey: .entitlementPerYear)
+        schedule = try c.decode(WeekSchedule.self, forKey: .schedule)
+        holidayRegion = try c.decode(HolidayRegion.self, forKey: .holidayRegion)
+        office = try c.decodeIfPresent(OfficeLocation.self, forKey: .office)
+        categories = try c.decodeIfPresent([EntryCategory].self, forKey: .categories) ?? []
     }
 
     public static let `default` = Settings(

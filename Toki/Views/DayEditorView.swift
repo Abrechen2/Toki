@@ -17,6 +17,7 @@ struct DayEditorView: View {
     @State private var quickStart = 8 * 3600 + 1800
     @State private var quickEnd = 16 * 3600 + 1800
     @State private var quickBreak = 0
+    @State private var quickEntry = TimeEntry(kind: .work)
 
     var body: some View {
         NavigationStack {
@@ -51,7 +52,8 @@ struct DayEditorView: View {
 
     /// Times are prefilled from the schedule; one tap books the day and closes the sheet.
     private var quickSection: some View {
-        let work = TimeEntry.work(start: quickStart, end: quickEnd, breakSeconds: quickBreak)
+        var work = TimeEntry.work(start: quickStart, end: quickEnd, breakSeconds: quickBreak)
+        if let category = store.category(quickEntry.categoryID) { work.assign(category) }
         return Section {
             DatePicker("Beginn", selection: TimeOfDay.binding($quickStart, on: date), displayedComponents: .hourAndMinute)
             DatePicker("Ende", selection: TimeOfDay.binding($quickEnd, on: date), displayedComponents: .hourAndMinute)
@@ -61,6 +63,9 @@ struct DayEditorView: View {
                 }
             }
             .accessibilityIdentifier("quickBreak")
+            if !store.settings.categories.isEmpty {
+                CategoryPicker(entry: $quickEntry)
+            }
             Button {
                 store.addWorkday(date, entry: work)
                 dismiss()
@@ -69,7 +74,7 @@ struct DayEditorView: View {
                     Image(systemName: "clock.fill")
                     Text("Arbeitstag eintragen").font(.headline)
                     Spacer()
-                    Text(HoursFormat.plain(work.workedSeconds)).font(.headline.monospacedDigit())
+                    Text(HoursFormat.plain(work.durationSeconds)).font(.headline.monospacedDigit())
                 }
                 .padding(.vertical, 6)
                 .foregroundStyle(.white)
@@ -132,7 +137,7 @@ struct DayEditorView: View {
             }
             .onDelete { offsets in self.record?.entries.remove(atOffsets: offsets) }
             Menu {
-                ForEach(EntryKind.allCases, id: \.self) { kind in
+                ForEach(EntryKind.allCases.filter { $0 != .separateTime }, id: \.self) { kind in
                     Button { editing = EntryEditing(entry: newEntry(kind), isNew: true) } label: {
                         Label(kind.localizedName, systemImage: kind.symbol)
                     }

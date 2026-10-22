@@ -38,7 +38,7 @@ enum PDFExporter {
             }
             newPage()
             for day in days {
-                for line in rows(for: day) {
+                for line in rows(for: day, store: store) {
                     if y > page.height - margin - rowHeight * 3 { newPage() }
                     for (index, text) in line.enumerated() {
                         let width = index + 1 < columns.count ? columns[index + 1].1 - columns[index].1 - 4 : page.width - 2 * margin - columns[index].1
@@ -59,7 +59,8 @@ enum PDFExporter {
         }
     }
 
-    private static func rows(for day: DayRecord) -> [[String]] {
+    @MainActor
+    private static func rows(for day: DayRecord, store: AppStore) -> [[String]] {
         let date = "\(DateText.weekdayShort(day.date)) \(day.date.german)"
         let dayValues = [HoursFormat.plain(Calculator.effectiveTarget(day)), HoursFormat.plain(Calculator.worked(day)),
                          HoursFormat.signed(Calculator.overtime(day))]
@@ -72,7 +73,9 @@ enum PDFExporter {
             } else {
                 times = ""
             }
-            let event = entry.kind == .work ? "" : entry.kind.localizedName
+            let event = entry.kind == .work ? (store.category(entry.categoryID)?.name ?? "")
+                : entry.kind == .separateTime ? "\(store.category(entry.categoryID)?.name ?? entry.kind.localizedName) (getrennt)"
+                : entry.kind.localizedName
             result.append((index == 0 ? [date] + dayValues : ["", "", "", ""]) + [times, event, entry.note])
         }
         if let credit = day.credit {

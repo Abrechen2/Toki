@@ -44,6 +44,7 @@ final class EntryModel {
     /// JSON of `EntryOrigin`; nil for entries made by hand.
     var originJSON: Data?
     var dayFraction: Double?
+    var categoryID: UUID?
     var day: DayModel?
 
     init(_ entry: TimeEntry, order: Int) {
@@ -56,13 +57,16 @@ final class EntryModel {
         note = entry.note
         originJSON = entry.origin.flatMap { try? JSONEncoder().encode($0) }
         dayFraction = entry.dayFraction
+        categoryID = entry.categoryID
     }
 
     var entry: TimeEntry {
-        TimeEntry(id: id, kind: EntryKind(rawValue: kindRaw) ?? .work, startSeconds: startSeconds,
-                  endSeconds: endSeconds, breakSeconds: breakSeconds, note: note,
-                  origin: originJSON.flatMap { try? JSONDecoder().decode(EntryOrigin.self, from: $0) },
-                  dayFraction: dayFraction)
+        var entry = TimeEntry(id: id, kind: EntryKind(rawValue: kindRaw) ?? .work, startSeconds: startSeconds,
+                              endSeconds: endSeconds, breakSeconds: breakSeconds, note: note,
+                              origin: originJSON.flatMap { try? JSONDecoder().decode(EntryOrigin.self, from: $0) },
+                              dayFraction: dayFraction)
+        entry.categoryID = categoryID
+        return entry
     }
 }
 

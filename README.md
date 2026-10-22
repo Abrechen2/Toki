@@ -25,6 +25,9 @@ German UI with an English translation.
   expires; quick vacation booking from a start date and an end date or a number
   of days — weekends, public holidays of the chosen German state and days that
   already have entries are skipped.
+- Categories for working times (e.g. "Switzerland"): a category either counts as normal work time
+  and only labels it, or keeps its time separate from target, actual time and overtime (paid
+  separately); export one category for a month, a year or any period as PDF/CSV with its total.
 - Review list of days that may deserve a credit (weekend work, notes mentioning
   vacation).
 - PDF per month or year, CSV (semicolon, German decimals).

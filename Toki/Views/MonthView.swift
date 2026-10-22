@@ -136,10 +136,11 @@ struct DayRow: View {
 }
 
 struct EntrySummary: View {
+    @Environment(AppStore.self) private var store
     let entry: TimeEntry
 
     var body: some View {
-        if entry.kind == .work, let start = entry.startSeconds {
+        if entry.kind.hasTimes, let start = entry.startSeconds {
             HStack(spacing: 6) {
                 if entry.origin != nil {
                     Image(systemName: "location.fill").font(.caption2).foregroundStyle(Theme.accent)
@@ -157,6 +158,13 @@ struct EntrySummary: View {
                     Text("Pause \(HoursFormat.plain(entry.breakSeconds))")
                         .font(.caption).foregroundStyle(Theme.secondaryText)
                 }
+                if let category = store.category(entry.categoryID) {
+                    CategoryBadge(category: category)
+                }
+            }
+            if entry.kind == .separateTime {
+                Text("\(HoursFormat.plain(entry.durationSeconds)) getrennt")
+                    .font(.caption).foregroundStyle(Theme.secondaryText)
             }
             if let reasons = entry.origin?.uncertain, !reasons.isEmpty {
                 Label("Unsicher: \(reasons.map(\.localizedName).joined(separator: ", "))",

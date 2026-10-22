@@ -8,7 +8,9 @@ public enum Calculator {
 
     /// 0 on days without entries (myTime only counts entered days) and on absence days.
     public static func effectiveTarget(_ day: DayRecord) -> Int {
-        if day.entries.isEmpty || day.entries.contains(where: { $0.kind.isAbsence }) { return 0 }
+        // Separate time does not count: a day with only separate time is like a day without entries.
+        let normal = day.entries.filter { $0.kind != .separateTime }
+        if normal.isEmpty || normal.contains(where: { $0.kind.isAbsence }) { return 0 }
         return day.targetSeconds
     }
 

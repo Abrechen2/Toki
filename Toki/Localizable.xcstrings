@@ -21,6 +21,16 @@
         }
       }
     },
+    "%@ getrennt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ separate"
+          }
+        }
+      }
+    },
     "%@ teilen": {
       "localizations": {
         "en": {
@@ -57,6 +67,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@–?"
+          }
+        }
+      }
+    },
+    "%lld Einträge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld entries"
           }
         }
       }
@@ -117,6 +137,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "0"
+          }
+        }
+      }
+    },
+    "1 Eintrag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 entry"
           }
         }
       }
@@ -187,6 +217,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "All data in the app will be replaced by the backup (%lld days)."
+          }
+        }
+      }
+    },
+    "Alle Einträge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All entries"
           }
         }
       }
@@ -361,12 +401,32 @@
         }
       }
     },
+    "Beginn–Ende": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start–end"
+          }
+        }
+      }
+    },
     "Beim Verwenden": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "While using"
+          }
+        }
+      }
+    },
+    "Bis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To"
           }
         }
       }
@@ -491,6 +551,16 @@
         }
       }
     },
+    "Die %lld Einträge behalten ihre Zeiten und bleiben, wie sie gerechnet werden; nur die Kennzeichnung entfällt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The %lld entries keep their times and how they are counted; only the label is removed."
+          }
+        }
+      }
+    },
     "Die Büro-Erkennung konnte nicht gestartet werden. Bitte später nochmal sichern.": {
       "localizations": {
         "en": {
@@ -527,6 +597,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "The backup contains impossible values on %@ and was not restored."
+          }
+        }
+      }
+    },
+    "Die Zeiten laufen getrennt: Sie zählen nicht für Soll, Ist und Überstunden. Ein Tag nur mit solchen Zeiten zählt, als wärst du nicht da gewesen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The times are kept separate: they do not count for target, actual time or overtime. A day with only such times counts as if you had not been there."
+          }
+        }
+      }
+    },
+    "Die Zeiten zählen ganz normal für Soll und Überstunden und sind nur gekennzeichnet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The times count normally for target and overtime and are only labelled."
           }
         }
       }
@@ -711,6 +801,16 @@
         }
       }
     },
+    "Farbe %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour %lld"
+          }
+        }
+      }
+    },
     "Fehler": {
       "localizations": {
         "en": {
@@ -807,6 +907,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Saved"
+          }
+        }
+      }
+    },
+    "Getrennte Zeit: zählt nicht für Soll und Überstunden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Separate time: does not count for target and overtime."
           }
         }
       }
@@ -1071,6 +1181,56 @@
         }
       }
     },
+    "Kategorie": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Category"
+          }
+        }
+      }
+    },
+    "Kategorie hinzufügen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add category"
+          }
+        }
+      }
+    },
+    "Kategorie löschen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete category?"
+          }
+        }
+      }
+    },
+    "Kategorien": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Categories"
+          }
+        }
+      }
+    },
+    "Kategorien kennzeichnen Arbeitszeiten, z. B. „Schweiz“ für Einsätze, die getrennt bezahlt werden. Im Export kannst du eine Kategorie mit Summe ausgeben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Categories label working times, e.g. “Switzerland” for assignments paid separately. Export can list one category with its total."
+          }
+        }
+      }
+    },
     "Kein Eintrag": {
       "localizations": {
         "en": {
@@ -1087,6 +1247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No access to your location. Please allow “Always” and “Precise Location” for Toki in Settings."
+          }
+        }
+      }
+    },
+    "Keine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
           }
         }
       }
@@ -1281,6 +1451,26 @@
         }
       }
     },
+    "Name, z. B. Schweiz": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name, e.g. Switzerland"
+          }
+        }
+      }
+    },
+    "Neue Kategorie": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New category"
+          }
+        }
+      }
+    },
     "Neuer Eintrag": {
       "localizations": {
         "en": {
@@ -1297,6 +1487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No credits yet"
+          }
+        }
+      }
+    },
+    "Noch keine Kategorien": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No categories yet"
           }
         }
       }
@@ -1347,6 +1547,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Note, e.g. destination"
+          }
+        }
+      }
+    },
+    "Nur die Einträge dieser Kategorie mit Datum, Zeit, Pause, Stunden, Notiz und Summe.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only this category’s entries with date, time, break, hours, note and total."
           }
         }
       }
@@ -1691,6 +1901,16 @@
         }
       }
     },
+    "Sonderzeit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Separate time"
+          }
+        }
+      }
+    },
     "Speichern fehlgeschlagen: %@": {
       "localizations": {
         "en": {
@@ -1797,6 +2017,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Search failed: %@"
+          }
+        }
+      }
+    },
+    "Summe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
+          }
+        }
+      }
+    },
+    "Summe: %@ (%@ h), %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total: %1$@ (%2$@ h), %3$@"
           }
         }
       }
@@ -1981,6 +2221,26 @@
         }
       }
     },
+    "Von": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From"
+          }
+        }
+      }
+    },
+    "Von–bis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From–to"
+          }
+        }
+      }
+    },
     "Vorheriger Monat": {
       "localizations": {
         "en": {
@@ -2091,6 +2351,16 @@
         }
       }
     },
+    "Zählt zur normalen Arbeitszeit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counts as normal working time"
+          }
+        }
+      }
+    },
     "an": {
       "localizations": {
         "en": {
@@ -2127,6 +2397,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "off"
+          }
+        }
+      }
+    },
+    "getrennt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "separate"
           }
         }
       }
@@ -2237,6 +2517,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "unusual time"
+          }
+        }
+      }
+    },
+    "zählt mit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "counts"
           }
         }
       }

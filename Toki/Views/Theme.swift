@@ -10,6 +10,11 @@ enum Theme {
     static let card = Color(red: 0x1C / 255, green: 0x1C / 255, blue: 0x1E / 255)
     static let secondaryText = Color(red: 0xA1 / 255, green: 0xA1 / 255, blue: 0xA6 / 255)
 
+    /// Palette for categories (index stored in `EntryCategory.colorIndex`).
+    static let categoryColors: [Color] = [.red, .orange, .yellow, .green, .teal, .blue, .purple, .pink]
+
+    static func categoryColor(_ index: Int) -> Color { categoryColors[((index % categoryColors.count) + categoryColors.count) % categoryColors.count] }
+
     static func overtimeColor(_ seconds: Int) -> Color {
         if abs(seconds) < 30 { return secondaryText }
         return seconds > 0 ? positive : negative
@@ -26,6 +31,7 @@ extension EntryKind {
         case .publicHoliday: return String(localized: "Feiertag")
         case .specialLeave: return String(localized: "Sonderurlaub")
         case .overtimeReduction: return String(localized: "Überstundenabbau")
+        case .separateTime: return String(localized: "Sonderzeit")
         }
     }
 
@@ -38,6 +44,7 @@ extension EntryKind {
         case .publicHoliday: return "calendar"
         case .specialLeave: return "gift"
         case .overtimeReduction: return "hourglass"
+        case .separateTime: return "tag"
         }
     }
 }
