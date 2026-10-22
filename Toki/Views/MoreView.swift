@@ -8,7 +8,10 @@ struct MoreView: View {
     @Environment(AppStore.self) private var store
     @Environment(AutoBackup.self) private var autoBackup
     @State private var pickFolder = false
-    @State private var purpose: FilePurpose?
+    // One picker per purpose: a shared picker lost its purpose because SwiftUI resets the
+    // presentation binding before the completion handler runs.
+    @State private var pickMyTime = false
+    @State private var pickRestore = false
     @State private var pendingImport: MyTimeImport?
     @State private var pendingRestore: Snapshot?
     @State private var backupFile: URL?
@@ -40,7 +43,7 @@ struct MoreView: View {
                     .accessibilityIdentifier("officeSettings")
                 }
                 Section {
-                    Button { purpose = .myTime } label: { Label("myTime-Backup importieren", systemImage: "square.and.arrow.down") }
+                    Button { pickMyTime = true } label: { Label("myTime-Backup importieren", systemImage: "square.and.arrow.down") }
                 } header: {
                     Text("Import")
                 } footer: {
@@ -52,9 +55,10 @@ struct MoreView: View {
                     if let backupFile {
                         ShareLink(item: backupFile) { Label("\(backupFile.lastPathComponent) teilen", systemImage: "square.and.arrow.up") }
                     }
-                    Button(role: .destructive) { purpose = .restore } label: {
+                    Button(role: .destructive) { pickRestore = true } label: {
                         Label("Sicherung wiederherstellen", systemImage: "arrow.counterclockwise")
                     }
+                    .accessibilityIdentifier("restoreBackup")
                 }
             }
             .navigationTitle("Mehr")
@@ -67,9 +71,15 @@ struct MoreView: View {
                     }
                 }
             }
-            .fileImporter(isPresented: Binding(get: { purpose != nil }, set: { if !$0 { purpose = nil } }),
-                          allowedContentTypes: [.json, .data, .item]) { result in
-                handle(result)
+            .background {
+                Color.clear.fileImporter(isPresented: $pickMyTime, allowedContentTypes: [.json, .data, .item]) { result in
+                    handle(result, as: .myTime)
+                }
+            }
+            .background {
+                Color.clear.fileImporter(isPresented: $pickRestore, allowedContentTypes: [.json, .data, .item]) { result in
+                    handle(result, as: .restore)
+                }
             }
             .sheet(item: Binding(get: { pendingImport.map(ImportBox.init) }, set: { pendingImport = $0?.value })) { box in
                 ImportPreviewView(imported: box.value)
@@ -121,21 +131,17 @@ struct MoreView: View {
         }
     }
 
-    private func handle(_ result: Result<URL, Error>) {
-        let current = purpose
-        purpose = nil
+    private func handle(_ result: Result<URL, Error>, as purpose: FilePurpose) {
         do {
             let url = try result.get()
             let access = url.startAccessingSecurityScopedResource()
             defer { if access { url.stopAccessingSecurityScopedResource() } }
             let data = try Data(contentsOf: url)
-            switch current {
+            switch purpose {
             case .myTime:
                 pendingImport = try MyTimeImporter.parse(data, base: store.settings)
             case .restore:
                 pendingRestore = try Snapshot.decode(data)
-            case nil:
-                break
             }
         } catch is MyTimeImportError {
             message = String(localized: "Die Datei ist kein myTime-Backup.")

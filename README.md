@@ -77,6 +77,11 @@ location (`xcrun simctl location <simulator id> set <lat>,<lon>`). The geofence
 test moves the location from outside and runs only with
 `TEST_RUNNER_TOKI_GEOFENCE_TEST=1` (see `TokiUITests/GeofenceUITests.swift`).
 
+Restoring a backup through the real document picker: put a backup named
+`Toki-Test-Sicherung.json` into the simulator's "On My iPhone" (the `File Provider Storage` folder of
+the `com.apple.DocumentsApp` LocalStorage group container) and run with
+`TEST_RUNNER_TOKI_RESTORE_TEST=1` (see `TokiUITests/RestoreBackupUITests.swift`).
+
 To build for your own device, change the bundle identifier and the development
 team in the project settings.
 
