@@ -94,5 +94,5 @@ own name and icon for a published fork.
 
 ## Privacy
 
-<https://abrechen2.de/apps/toki/datenschutz/> (German) ·
-<https://abrechen2.de/en/apps/toki/privacy/> (English)
+<https://www.abrechen2.de/apps/toki/datenschutz/> (German) ·
+<https://www.abrechen2.de/en/apps/toki/privacy/> (English)
