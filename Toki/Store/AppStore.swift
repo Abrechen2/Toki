@@ -42,9 +42,11 @@ final class AppStore {
 
     var sortedDays: [DayRecord] { days.values.sorted { $0.date < $1.date } }
 
-    /// The stored day, or a fresh one with today's schedule target.
+    /// The stored day, or a fresh one with the current schedule target. A stored day without
+    /// anything recorded (e.g. from an import) also gets the current target.
     func day(_ date: LocalDate) -> DayRecord {
-        days[date] ?? DayRecord(date: date, targetSeconds: settings.schedule.targetSeconds(for: date), entries: [])
+        if let record = days[date], !record.isBlank { return record }
+        return DayRecord(date: date, targetSeconds: settings.schedule.targetSeconds(for: date), entries: [])
     }
 
     func days(in month: LocalDate) -> [DayRecord] {
@@ -76,9 +78,8 @@ final class AppStore {
     }
 
     func save(_ record: DayRecord) {
-        let isDefault = record.entries.isEmpty && record.credit == nil && record.adjustmentSeconds == 0
-            && record.vacationCorrection == nil
-            && record.targetSeconds == settings.schedule.targetSeconds(for: record.date)
+        // A blank day counts no target, so it is not stored; this keeps it following the schedule.
+        let isDefault = record.isBlank
         if isDefault {
             days[record.date] = nil
         } else {
@@ -191,7 +192,7 @@ final class AppStore {
     /// Replaces everything in one save. Stays recorded before the restore belong to the old data;
     /// keeping them would let the next location refresh overwrite restored automatic entries.
     func restore(_ snapshot: Snapshot) {
-        days = Dictionary(snapshot.days.map { ($0.date, $0) }, uniquingKeysWith: { _, last in last })
+        days = Dictionary(snapshot.days.filter { !$0.isBlank }.map { ($0.date, $0) }, uniquingKeysWith: { _, last in last })
         settings = snapshot.settings
         transaction {
             try context.delete(model: VisitModel.self)
@@ -299,7 +300,7 @@ final class AppStore {
 
     private func replaceDayModels(_ records: [DayRecord]) throws {
         try context.delete(model: DayModel.self)
-        for record in records { insert(record) }
+        for record in records where !record.isBlank { insert(record) }
     }
 
     private func writeSettings(_ new: Settings) throws {

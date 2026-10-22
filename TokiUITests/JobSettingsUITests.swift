@@ -13,8 +13,10 @@ final class JobSettingsUITests: XCTestCase {
 
         let monday = app.steppers["target-2"]
         XCTAssertTrue(monday.waitForExistence(timeout: 5))
+        XCTAssertTrue(shows(app, "37h 00m")) // standard week: 4 × 8 h + 5 h
         monday.buttons.element(boundBy: 1).tap() // +15 min
         XCTAssertTrue(shows(app, "8h 15m"))
+        XCTAssertTrue(shows(app, "37h 15m"))
         XCTAssertTrue(app.staticTexts["Zeiten ergeben 8h 00m"].exists)
         if let dir = ProcessInfo.processInfo.environment["SCREENSHOT_DIR"] {
             try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: dir).appendingPathComponent("default-values.png"))

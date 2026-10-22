@@ -17,7 +17,8 @@ struct SettingsView: View {
                     NavigationLink {
                         ScheduleView(schedule: binding(\.schedule))
                     } label: {
-                        Text("Standardwerte für neue Einträge")
+                        LabeledContent("Standardwerte für neue Einträge",
+                                       value: HoursFormat.plain(binding(\.schedule).wrappedValue.weeklyTargetSeconds))
                     }
                     .accessibilityIdentifier("defaultValues")
                     Picker("Bundesland (Feiertage)", selection: binding(\.holidayRegion)) {
@@ -69,6 +70,10 @@ struct SettingsView: View {
             }
         }
         .onAppear { if draft == nil { draft = store.settings } }
+        // Leaving with the back button must not lose changes, e.g. new default values.
+        .onChange(of: draft) { _, new in
+            if let new, new != store.settings { store.saveSettings(new) }
+        }
     }
 
     private func binding<Value>(_ path: WritableKeyPath<Settings, Value>) -> Binding<Value> {
@@ -93,7 +98,7 @@ struct SettingsView: View {
 }
 
 /// "Standardwerte für neue Einträge": per weekday the default times and, independently, the target.
-/// Only affects days created from now on; stored days keep their target.
+/// Applies to every day without entries; days with entries keep their target.
 struct ScheduleView: View {
     @Binding var schedule: WeekSchedule
 
@@ -102,6 +107,12 @@ struct ScheduleView: View {
 
     var body: some View {
         Form {
+            Section {
+                LabeledContent("Soll pro Woche", value: HoursFormat.plain(schedule.weeklyTargetSeconds))
+                    .accessibilityIdentifier("weeklyTarget")
+            } footer: {
+                Text("Summe der Sollstunden aller Arbeitstage.")
+            }
             ForEach(order, id: \.self) { weekday in
                 Section(Calendar.current.weekdaySymbols[weekday - 1]) {
                     Toggle("Arbeitstag", isOn: workdayBinding(weekday))
@@ -129,7 +140,7 @@ struct ScheduleView: View {
             Section {
                 EmptyView()
             } footer: {
-                Text("Sollstunden und Standardzeiten gelten für neue Tage; gespeicherte Tage behalten ihr Soll.")
+                Text("Sollstunden und Standardzeiten gelten für alle Tage ohne Eintrag; Tage mit Einträgen behalten ihr Soll.")
             }
         }
         .navigationTitle("Standardwerte")

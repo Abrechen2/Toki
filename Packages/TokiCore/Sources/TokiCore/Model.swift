@@ -153,6 +153,12 @@ public struct DayRecord: Codable, Hashable, Identifiable, Sendable {
 
     public var id: LocalDate { date }
 
+    /// Nothing recorded: such a day counts no target, so its stored target means nothing and the
+    /// current schedule applies when something is entered.
+    public var isBlank: Bool {
+        entries.isEmpty && credit == nil && adjustmentSeconds == 0 && vacationCorrection == nil
+    }
+
     public init(date: LocalDate, targetSeconds: Int, entries: [TimeEntry], credit: Credit? = nil,
                 adjustmentSeconds: Int = 0, vacationCorrection: VacationCorrection? = nil) {
         self.date = date
@@ -186,6 +192,9 @@ public struct WeekSchedule: Codable, Hashable, Sendable {
     public init(days: [Int: DayTemplate]) { self.days = days }
 
     public func targetSeconds(for date: LocalDate) -> Int { days[date.weekday]?.targetSeconds ?? 0 }
+
+    /// Sum of the target over Monday to Sunday.
+    public var weeklyTargetSeconds: Int { days.values.reduce(0) { $0 + $1.targetSeconds } }
 
     /// Default work entry for one-tap booking. Days without a template (weekends) use the first
     /// workday's times from Monday on; an empty schedule falls back to 08:30–16:30.

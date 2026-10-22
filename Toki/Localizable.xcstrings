@@ -1851,6 +1851,16 @@
         }
       }
     },
+    "Soll pro Woche": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target per week"
+          }
+        }
+      }
+    },
     "Soll und Korrektur": {
       "localizations": {
         "en": {
@@ -1881,12 +1891,12 @@
         }
       }
     },
-    "Sollstunden und Standardzeiten gelten für neue Tage; gespeicherte Tage behalten ihr Soll.": {
+    "Sollstunden und Standardzeiten gelten für alle Tage ohne Eintrag; Tage mit Einträgen behalten ihr Soll.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Target hours and default times apply to new days; saved days keep their target."
+            "value": "Target hours and default times apply to every day without entries; days with entries keep their target."
           }
         }
       }
@@ -2027,6 +2037,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Total"
+          }
+        }
+      }
+    },
+    "Summe der Sollstunden aller Arbeitstage.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sum of the target hours of all workdays."
           }
         }
       }

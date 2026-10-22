@@ -40,6 +40,12 @@ struct TokiApp: App {
                           origin: EntryOrigin(source: .location, uncertain: [])),
             ]))
         }
+        // Tests with a real backup file, also against the persistent store (no -uiTesting).
+        if let path = ProcessInfo.processInfo.environment["TOKI_SNAPSHOT"],
+           let data = FileManager.default.contents(atPath: path), let snapshot = try? Snapshot.decode(data) {
+            store.restore(snapshot)
+            store.completeOnboarding()
+        }
         if inMemory, ProcessInfo.processInfo.environment["TOKI_DEMO"] == "1" {
             DemoData.seed(into: store)
         }

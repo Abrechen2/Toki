@@ -52,3 +52,20 @@ final class WeekScheduleTests: XCTestCase {
         XCTAssertEqual(TimeEntry.work(start: 8 * 3600, end: 8 * 3600, breakSeconds: 0).workedSeconds, 0)
     }
 }
+
+final class WeeklyTargetTests: XCTestCase {
+    func testWeeklyTargetSumsAllWeekdays() {
+        XCTAssertEqual(WeekSchedule.standard.weeklyTargetSeconds, 4 * 8 * 3600 + 5 * 3600)
+        XCTAssertEqual(WeekSchedule(days: [:]).weeklyTargetSeconds, 0)
+    }
+
+    func testBlankDayHasNoEntriesCreditOrCorrections() {
+        let date = LocalDate(2026, 10, 26)
+        XCTAssertTrue(DayRecord(date: date, targetSeconds: 0, entries: []).isBlank)
+        XCTAssertFalse(DayRecord(date: date, targetSeconds: 0, entries: [TimeEntry(kind: .vacation)]).isBlank)
+        XCTAssertFalse(DayRecord(date: date, targetSeconds: 0, entries: [], credit: Credit(note: "x")).isBlank)
+        XCTAssertFalse(DayRecord(date: date, targetSeconds: 0, entries: [], adjustmentSeconds: 60).isBlank)
+        XCTAssertFalse(DayRecord(date: date, targetSeconds: 0, entries: [],
+                                 vacationCorrection: VacationCorrection(days: 1, note: "")).isBlank)
+    }
+}

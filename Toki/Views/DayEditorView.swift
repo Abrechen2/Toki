@@ -95,6 +95,7 @@ struct DayEditorView: View {
                         .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityIdentifier("quick-\(kind.rawValue)")
                 }
             }
         } header: {
