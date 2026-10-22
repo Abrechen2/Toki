@@ -15,3 +15,4 @@ tools/asc.py
 tools/testflight.sh
 tools/remote-release.sh
 tools/ExportOptions.plist
+tools/store_listing.py
