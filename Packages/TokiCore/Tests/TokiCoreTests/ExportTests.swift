@@ -18,6 +18,14 @@ final class ExportTests: XCTestCase {
         XCTAssertEqual(candidates.map(\.reason), [.weekendWork, .noteMentionsVacation])
     }
 
+    func testVacationNotesAreNoCreditCandidates() {
+        let vacation = DayRecord(date: LocalDate(2030, 8, 5), targetSeconds: 0,
+                                 entries: [TimeEntry(kind: .vacation, note: "Sommerurlaub")])
+        let holiday = DayRecord(date: LocalDate(2030, 5, 1), targetSeconds: 0,
+                                entries: [TimeEntry(kind: .publicHoliday, note: "+1 Urlaubstag")])
+        XCTAssertEqual(CreditCandidates.find(in: [vacation, holiday]).map(\.date), [LocalDate(2030, 5, 1)])
+    }
+
     func testCSVEscapesAndUsesGermanDecimals() {
         let csv = CSVExport.make(days: [saturday, monday])
         let lines = csv.split(separator: "\n").map(String.init)

@@ -16,7 +16,8 @@ public enum CreditCandidates {
             if day.date.isWeekend && Calculator.worked(day) > 0 {
                 return CreditCandidate(date: day.date, reason: .weekendWork)
             }
-            if day.entries.contains(where: { $0.note.lowercased().contains("urlaub") }) {
+            // Notes on vacation entries naturally mention vacation; only other entries count.
+            if day.entries.contains(where: { $0.kind != .vacation && $0.note.lowercased().contains("urlaub") }) {
                 return CreditCandidate(date: day.date, reason: .noteMentionsVacation)
             }
             return nil
