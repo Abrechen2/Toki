@@ -20,11 +20,15 @@ public enum Calculator {
     }
 
     public static func vacationDays(_ day: DayRecord) -> Double {
-        Double(day.entries.filter { $0.kind == .vacation }.count)
+        day.entries.filter { $0.kind == .vacation }.reduce(0) { $0 + ($1.dayFraction ?? 1) }
     }
 
     public static func creditDays(_ day: DayRecord) -> Double {
-        day.credit == nil ? 0 : 1
+        day.credit?.days ?? 0
+    }
+
+    public static func correctionDays(_ day: DayRecord) -> Double {
+        day.vacationCorrection?.days ?? 0
     }
 
     public static func count(_ kind: EntryKind, in days: [DayRecord]) -> Int {

@@ -8,7 +8,11 @@ final class DayModel {
     @Attribute(.unique) var key: String
     var targetSeconds: Int
     var creditNote: String?
+    /// nil = one day (stores written before fractional credits existed).
+    var creditDays: Double?
     var adjustmentSeconds: Int
+    var correctionDays: Double?
+    var correctionNote: String?
     @Relationship(deleteRule: .cascade, inverse: \EntryModel.day) var entries: [EntryModel] = []
 
     init(key: String, targetSeconds: Int, creditNote: String?, adjustmentSeconds: Int) {
@@ -22,8 +26,9 @@ final class DayModel {
         guard let date = LocalDate(iso: key) else { return nil }
         return DayRecord(date: date, targetSeconds: targetSeconds,
                          entries: entries.sorted { $0.order < $1.order }.map(\.entry),
-                         credit: creditNote.map(Credit.init(note:)),
-                         adjustmentSeconds: adjustmentSeconds)
+                         credit: creditNote.map { Credit(note: $0, days: creditDays ?? 1) },
+                         adjustmentSeconds: adjustmentSeconds,
+                         vacationCorrection: correctionDays.map { VacationCorrection(days: $0, note: correctionNote ?? "") })
     }
 }
 
@@ -38,6 +43,7 @@ final class EntryModel {
     var note: String
     /// JSON of `EntryOrigin`; nil for entries made by hand.
     var originJSON: Data?
+    var dayFraction: Double?
     var day: DayModel?
 
     init(_ entry: TimeEntry, order: Int) {
@@ -49,12 +55,14 @@ final class EntryModel {
         breakSeconds = entry.breakSeconds
         note = entry.note
         originJSON = entry.origin.flatMap { try? JSONEncoder().encode($0) }
+        dayFraction = entry.dayFraction
     }
 
     var entry: TimeEntry {
         TimeEntry(id: id, kind: EntryKind(rawValue: kindRaw) ?? .work, startSeconds: startSeconds,
                   endSeconds: endSeconds, breakSeconds: breakSeconds, note: note,
-                  origin: originJSON.flatMap { try? JSONDecoder().decode(EntryOrigin.self, from: $0) })
+                  origin: originJSON.flatMap { try? JSONDecoder().decode(EntryOrigin.self, from: $0) },
+                  dayFraction: dayFraction)
     }
 }
 

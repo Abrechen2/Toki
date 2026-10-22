@@ -35,6 +35,7 @@ public enum DayMerge {
         for day in incoming {
             var merged = day
             if merged.credit == nil { merged.credit = byDate[day.date]?.credit }
+            if merged.vacationCorrection == nil { merged.vacationCorrection = byDate[day.date]?.vacationCorrection }
             if let old = byDate[day.date], old.entries.map(\.withoutID) == day.entries.map(\.withoutID) {
                 merged.entries = old.entries
             }

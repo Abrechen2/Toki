@@ -1,7 +1,7 @@
 import Foundation
 
 public struct LedgerLine: Hashable, Sendable {
-    public enum Kind: Hashable, Sendable { case anchor, entitlement, vacation, credit }
+    public enum Kind: Hashable, Sendable { case anchor, entitlement, vacation, credit, correction }
 
     public var date: LocalDate
     public var change: Double
@@ -25,7 +25,7 @@ public struct VacationLedger {
     public func balance(on date: LocalDate) -> Double {
         var value = settings.anchor.value + settings.entitlementPerYear * Double(newYears(through: date))
         for day in days where day.date <= date {
-            value += Calculator.creditDays(day) - Calculator.vacationDays(day)
+            value += Calculator.creditDays(day) - Calculator.vacationDays(day) + Calculator.correctionDays(day)
         }
         return value
     }
@@ -51,10 +51,13 @@ public struct VacationLedger {
         }
         for day in days where day.date <= end {
             for entry in day.entries where entry.kind == .vacation {
-                events.append((day.date, 1, -1, .vacation, entry.note))
+                events.append((day.date, 1, -(entry.dayFraction ?? 1), .vacation, entry.note))
             }
             if let credit = day.credit {
-                events.append((day.date, 2, 1, .credit, credit.note))
+                events.append((day.date, 2, credit.days, .credit, credit.note))
+            }
+            if let correction = day.vacationCorrection {
+                events.append((day.date, 3, correction.days, .correction, correction.note))
             }
         }
         events.sort { ($0.date, $0.order) < ($1.date, $1.order) }
@@ -74,11 +77,11 @@ public struct VacationLedger {
         for line in lines(through: end) where line.kind == .vacation {
             if var last = blocks.last, last.end.days(until: line.date) <= maxGap {
                 last.end = line.date
-                last.days += 1
+                last.days -= line.change
                 last.balanceAfter = line.balance
                 blocks[blocks.count - 1] = last
             } else {
-                blocks.append(VacationBlock(start: line.date, end: line.date, days: 1, note: line.note,
+                blocks.append(VacationBlock(start: line.date, end: line.date, days: -line.change, note: line.note,
                                             balanceAfter: line.balance))
             }
         }

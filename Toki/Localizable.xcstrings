@@ -91,12 +91,12 @@
         }
       }
     },
-    "+1": {
+    "+%@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "+1"
+            "value": "+%@"
           }
         }
       }
@@ -831,6 +831,16 @@
         }
       }
     },
+    "Grund (Pflicht), z. B. laut Urlaubskarte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reason (required), e.g. per vacation card"
+          }
+        }
+      }
+    },
     "Gutschreiben": {
       "localizations": {
         "en": {
@@ -877,6 +887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Credits"
+          }
+        }
+      }
+    },
+    "Halber Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Half day"
           }
         }
       }
@@ -1087,6 +1107,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Child sick"
+          }
+        }
+      }
+    },
+    "Korrektur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correction"
+          }
+        }
+      }
+    },
+    "Korrektur Urlaubskonto": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vacation account correction"
           }
         }
       }
@@ -1307,6 +1347,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Note, e.g. destination"
+          }
+        }
+      }
+    },
+    "Nur für Abweichungen, die sich nicht aus Einträgen ergeben, etwa eine Korrektur durch den Arbeitgeber.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only for differences that do not follow from entries, e.g. a correction by the employer."
           }
         }
       }
@@ -1851,6 +1901,16 @@
         }
       }
     },
+    "Urlaubstag-Gutschrift (+%@ Tage)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vacation day credit (+%@ days)"
+          }
+        }
+      }
+    },
     "Urlaubstag-Gutschrift (+1 Tag)": {
       "localizations": {
         "en": {
@@ -2017,6 +2077,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Day summary"
+          }
+        }
+      }
+    },
+    "Zählt als halber Urlaubstag; das Soll des Tages ist 0.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counts as half a vacation day; the day has no target."
           }
         }
       }

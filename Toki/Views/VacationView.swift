@@ -59,7 +59,7 @@ struct VacationView: View {
                                 Text(line.date.display).monospacedDigit()
                                 Text(line.note).foregroundStyle(Theme.secondaryText).lineLimit(1)
                                 Spacer()
-                                Text("+1").foregroundStyle(Theme.positive)
+                                Text("+\(HoursFormat.days(line.change))").foregroundStyle(Theme.positive)
                             }
                         }
                         .buttonStyle(.plain)
@@ -181,6 +181,7 @@ private struct HistoryRow: View {
         case .entitlement: return String(localized: "Jahresanspruch")
         case .vacation: return item.title.isEmpty ? String(localized: "Urlaub") : item.title
         case .credit: return String(localized: "Gutschrift") + (item.title.isEmpty ? "" : " · \(item.title)")
+        case .correction: return String(localized: "Korrektur") + (item.title.isEmpty ? "" : " · \(item.title)")
         }
     }
 }

@@ -106,10 +106,17 @@ struct DayRow: View {
                     EntrySummary(entry: entry)
                 }
                 if let credit = day.credit {
-                    Label(credit.note.isEmpty ? String(localized: "Urlaubstag-Gutschrift") : credit.note,
-                          systemImage: "plus.circle.fill")
+                    let text = credit.note.isEmpty ? String(localized: "Urlaubstag-Gutschrift") : credit.note
+                    Label(credit.days == 1 ? text : "+\(HoursFormat.days(credit.days)) · \(text)", systemImage: "plus.circle.fill")
                         .font(.caption)
                         .foregroundStyle(Theme.positive)
+                }
+                if let correction = day.vacationCorrection {
+                    Label("Urlaubskonto \(correction.days > 0 ? "+" : "")\(HoursFormat.days(correction.days))"
+                          + (correction.note.isEmpty ? "" : " · \(correction.note)"),
+                          systemImage: "plusminus.circle")
+                        .font(.caption)
+                        .foregroundStyle(Theme.accent)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,7 +169,8 @@ struct EntrySummary: View {
                 Text(entry.note).font(.caption).foregroundStyle(Theme.secondaryText).lineLimit(1)
             }
         } else {
-            Label(entry.note.isEmpty ? entry.kind.localizedName : "\(entry.kind.localizedName) · \(entry.note)",
+            let name = entry.dayFraction == 0.5 ? "½ \(entry.kind.localizedName)" : entry.kind.localizedName
+            Label(entry.note.isEmpty ? name : "\(name) · \(entry.note)",
                   systemImage: entry.kind.symbol)
                 .font(.subheadline)
                 .lineLimit(1)

@@ -12,18 +12,22 @@ public enum CSVExport {
             let entries: [TimeEntry?] = day.entries.isEmpty ? [nil] : day.entries
             for (index, entry) in entries.enumerated() {
                 let first = index == 0
-                let notes = [entry?.note, first ? day.credit?.note : nil].compactMap { $0 }.filter { !$0.isEmpty }
+                let correction = first ? day.vacationCorrection.map { c in
+                    "Urlaubskorrektur \(c.days > 0 ? "+" : "")\(HoursFormat.days(c.days))" + (c.note.isEmpty ? "" : " (\(c.note))")
+                } : nil
+                let notes = [entry?.note, first ? day.credit?.note : nil, correction].compactMap { $0 }.filter { !$0.isEmpty }
+                let kind = entry.map { $0.dayFraction == 0.5 ? "½ \($0.kind.exportName)" : $0.kind.exportName } ?? ""
                 let fields: [String] = [
                     day.date.german,
                     weekdays[day.date.weekday - 1],
-                    entry?.kind.exportName ?? "",
+                    kind,
                     entry?.startSeconds.map(HoursFormat.clock) ?? "",
                     entry?.endSeconds.map(HoursFormat.clock) ?? "",
                     entry.map { HoursFormat.decimal($0.breakSeconds) } ?? "",
                     first ? HoursFormat.decimal(Calculator.effectiveTarget(day)) : "",
                     entry.map { HoursFormat.decimal($0.workedSeconds) } ?? "",
                     first ? HoursFormat.decimal(Calculator.overtime(day)) : "",
-                    first && day.credit != nil ? "1" : "",
+                    first ? day.credit.map { HoursFormat.days($0.days) } ?? "" : "",
                     notes.joined(separator: " · "),
                 ]
                 lines.append(fields.map(escape).joined(separator: ";"))

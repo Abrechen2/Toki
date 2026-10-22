@@ -77,6 +77,7 @@ final class AppStore {
 
     func save(_ record: DayRecord) {
         let isDefault = record.entries.isEmpty && record.credit == nil && record.adjustmentSeconds == 0
+            && record.vacationCorrection == nil
             && record.targetSeconds == settings.schedule.targetSeconds(for: record.date)
         if isDefault {
             days[record.date] = nil
@@ -127,7 +128,7 @@ final class AppStore {
 
     func setCredit(_ date: LocalDate, note: String?) {
         var record = day(date)
-        record.credit = note.map(Credit.init(note:))
+        record.credit = note.map { Credit(note: $0) }
         save(record)
     }
 
@@ -281,6 +282,9 @@ final class AppStore {
     private func insert(_ record: DayRecord) {
         let model = DayModel(key: record.date.iso, targetSeconds: record.targetSeconds,
                              creditNote: record.credit?.note, adjustmentSeconds: record.adjustmentSeconds)
+        model.creditDays = record.credit.map { $0.days == 1 ? nil : $0.days } ?? nil
+        model.correctionDays = record.vacationCorrection?.days
+        model.correctionNote = record.vacationCorrection?.note
         context.insert(model)
         model.entries = record.entries.enumerated().map { EntryModel($1, order: $0) }
     }

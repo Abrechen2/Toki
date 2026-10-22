@@ -36,7 +36,11 @@ struct EntryEditorView: View {
                     Text("Der Tag behält sein Soll; ohne Arbeitszeit wird es vom Überstundenkonto abgezogen.")
                         .font(.footnote).foregroundStyle(Theme.secondaryText)
                 } else {
-                    Text("Ganzer Tag ohne Stunden; das Soll des Tages ist 0.")
+                    Toggle("Halber Tag", isOn: Binding(get: { entry.dayFraction == 0.5 },
+                                                       set: { entry.dayFraction = $0 ? 0.5 : nil }))
+                    Text(entry.kind == .vacation && entry.dayFraction == 0.5
+                         ? "Zählt als halber Urlaubstag; das Soll des Tages ist 0."
+                         : "Ganzer Tag ohne Stunden; das Soll des Tages ist 0.")
                         .font(.footnote).foregroundStyle(Theme.secondaryText)
                 }
                 Section("Notiz") {
@@ -60,7 +64,7 @@ struct EntryEditorView: View {
     /// Day types carry no times; work times go through the core's overnight rule.
     private var normalized: TimeEntry {
         guard entry.kind == .work else {
-            return TimeEntry(id: entry.id, kind: entry.kind, note: entry.note)
+            return TimeEntry(id: entry.id, kind: entry.kind, note: entry.note, dayFraction: entry.dayFraction)
         }
         var result = TimeEntry.work(start: entry.startSeconds ?? 8 * 3600, end: entry.endSeconds ?? 8 * 3600,
                                     breakSeconds: entry.breakSeconds, note: entry.note)

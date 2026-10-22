@@ -43,9 +43,12 @@ public struct TimeEntry: Codable, Hashable, Identifiable, Sendable {
     public var note: String
     /// nil = entered by hand (or confirmed); set for automatic entries.
     public var origin: EntryOrigin?
+    /// Share of the day for day types, e.g. 0.5 for half a vacation day; nil = whole day.
+    public var dayFraction: Double?
 
     public init(id: UUID = UUID(), kind: EntryKind, startSeconds: Int? = nil, endSeconds: Int? = nil,
-                breakSeconds: Int = 0, note: String = "", origin: EntryOrigin? = nil) {
+                breakSeconds: Int = 0, note: String = "", origin: EntryOrigin? = nil, dayFraction: Double? = nil) {
+        self.dayFraction = dayFraction
         self.id = id
         self.kind = kind
         self.startSeconds = startSeconds
@@ -93,10 +96,33 @@ public enum UncertainReason: String, Codable, CaseIterable, Sendable {
     case missingEnd, overnight, longDay, unusualTime, nonWorkday
 }
 
-/// Whole extra vacation day earned on a day (the feature myTime lacks).
+/// Extra vacation earned on a day (the feature myTime lacks); normally one whole day.
 public struct Credit: Codable, Hashable, Sendable {
     public var note: String
-    public init(note: String) { self.note = note }
+    /// Days credited; 1 unless an official record says otherwise (e.g. 1.5).
+    public var days: Double
+
+    public init(note: String, days: Double = 1) {
+        self.note = note
+        self.days = days
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        note = try container.decode(String.self, forKey: .note)
+        days = try container.decodeIfPresent(Double.self, forKey: .days) ?? 1
+    }
+}
+
+/// Explicit change of the vacation balance on a day, e.g. a correction on the official vacation card.
+public struct VacationCorrection: Codable, Hashable, Sendable {
+    public var days: Double
+    public var note: String
+
+    public init(days: Double, note: String) {
+        self.days = days
+        self.note = note
+    }
 }
 
 public struct DayRecord: Codable, Hashable, Identifiable, Sendable {
@@ -107,16 +133,19 @@ public struct DayRecord: Codable, Hashable, Identifiable, Sendable {
     public var credit: Credit?
     /// Manual correction of the overtime account on this day.
     public var adjustmentSeconds: Int
+    /// Manual correction of the vacation account on this day.
+    public var vacationCorrection: VacationCorrection?
 
     public var id: LocalDate { date }
 
     public init(date: LocalDate, targetSeconds: Int, entries: [TimeEntry], credit: Credit? = nil,
-                adjustmentSeconds: Int = 0) {
+                adjustmentSeconds: Int = 0, vacationCorrection: VacationCorrection? = nil) {
         self.date = date
         self.targetSeconds = targetSeconds
         self.entries = entries
         self.credit = credit
         self.adjustmentSeconds = adjustmentSeconds
+        self.vacationCorrection = vacationCorrection
     }
 }
 

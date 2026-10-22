@@ -10,6 +10,9 @@ struct DayEditorView: View {
     @State private var record: DayRecord?
     @State private var editing: EntryEditing?
     @State private var creditOn = false
+    @State private var creditDays = 1.0
+    @State private var correctionDays = 0.0
+    @State private var correctionNote = ""
     @State private var creditNote = ""
     @State private var quickStart = 8 * 3600 + 1800
     @State private var quickEnd = 16 * 3600 + 1800
@@ -25,6 +28,7 @@ struct DayEditorView: View {
                     summary(record)
                     entriesSection(record)
                     creditSection
+                    correctionSection
                     targetSection
                 }
             }
@@ -33,7 +37,7 @@ struct DayEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Sichern") { save() }.disabled(creditOn && creditNote.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button("Sichern") { save() }.disabled(!canSave)
                 }
             }
             .sheet(item: $editing) { editing in
@@ -141,7 +145,8 @@ struct DayEditorView: View {
 
     private var creditSection: some View {
         Section {
-            Toggle("Urlaubstag-Gutschrift (+1 Tag)", isOn: $creditOn)
+            Toggle(creditDays == 1 ? String(localized: "Urlaubstag-Gutschrift (+1 Tag)")
+                   : String(localized: "Urlaubstag-Gutschrift (+\(HoursFormat.days(creditDays)) Tage)"), isOn: $creditOn)
             if creditOn {
                 TextField("Grund (Pflicht), z. B. Wochenend-Einsatz", text: $creditNote)
             }
@@ -150,6 +155,30 @@ struct DayEditorView: View {
         } footer: {
             Text("Für Tage, an denen du einen ganzen Urlaubstag zusätzlich bekommst. Erfasste Stunden bleiben sichtbar, zählen aber nicht als Überstunden.")
         }
+    }
+
+    /// Explicit change of the vacation balance, e.g. to match the official vacation card.
+    private var correctionSection: some View {
+        Section {
+            Stepper(value: $correctionDays, in: -60...60, step: 0.5) {
+                LabeledContent("Urlaubstage", value: (correctionDays > 0 ? "+" : "") + HoursFormat.days(correctionDays))
+            }
+            .accessibilityIdentifier("vacationCorrection")
+            if correctionDays != 0 {
+                TextField("Grund (Pflicht), z. B. laut Urlaubskarte", text: $correctionNote)
+                    .accessibilityIdentifier("vacationCorrectionNote")
+            }
+        } header: {
+            Text("Korrektur Urlaubskonto")
+        } footer: {
+            Text("Nur für Abweichungen, die sich nicht aus Einträgen ergeben, etwa eine Korrektur durch den Arbeitgeber.")
+        }
+    }
+
+    private var canSave: Bool {
+        let creditOK = !creditOn || !creditNote.trimmingCharacters(in: .whitespaces).isEmpty
+        let correctionOK = correctionDays == 0 || !correctionNote.trimmingCharacters(in: .whitespaces).isEmpty
+        return creditOK && correctionOK
     }
 
     private var targetSection: some View {
@@ -177,7 +206,8 @@ struct DayEditorView: View {
 
     private func previewRecord(_ record: DayRecord) -> DayRecord {
         var copy = record
-        copy.credit = creditOn ? Credit(note: creditNote) : nil
+        copy.credit = creditOn ? Credit(note: creditNote, days: creditDays) : nil
+        copy.vacationCorrection = correctionDays == 0 ? nil : VacationCorrection(days: correctionDays, note: correctionNote)
         return copy
     }
 
@@ -200,6 +230,9 @@ struct DayEditorView: View {
         let day = store.day(date)
         record = day
         creditOn = day.credit != nil
+        creditDays = day.credit?.days ?? 1
+        correctionDays = day.vacationCorrection?.days ?? 0
+        correctionNote = day.vacationCorrection?.note ?? ""
         creditNote = day.credit?.note ?? ""
         let template = store.settings.schedule.workEntry(for: date)
         quickStart = template.startSeconds ?? quickStart

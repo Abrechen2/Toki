@@ -47,7 +47,10 @@ enum Limits {
     }
 
     static func isValid(_ record: DayRecord) -> Bool {
-        (0...day).contains(record.targetSeconds)
+        if let credit = record.credit, !(credit.days.isFinite && credit.days > 0 && credit.days <= 10) { return false }
+        if let correction = record.vacationCorrection,
+           !(correction.days.isFinite && abs(correction.days) <= 400) { return false }
+        return (0...day).contains(record.targetSeconds)
             && (-maxAdjustmentSeconds...maxAdjustmentSeconds).contains(record.adjustmentSeconds)
             && record.entries.allSatisfy(isValid)
     }
@@ -55,6 +58,7 @@ enum Limits {
     static func isValid(_ entry: TimeEntry) -> Bool {
         if let start = entry.startSeconds, !(0..<(2 * day)).contains(start) { return false }
         if let end = entry.endSeconds, !(0...(4 * day)).contains(end) { return false }
+        if let fraction = entry.dayFraction, !(fraction.isFinite && fraction > 0 && fraction <= 1) { return false }
         return (0...day).contains(entry.breakSeconds)
     }
 }
