@@ -64,6 +64,7 @@ struct MoreView: View {
                     }
                     .accessibilityIdentifier("restoreBackup")
                 }
+                creditSection
             }
             .navigationTitle("Mehr")
             .background {
@@ -133,6 +134,32 @@ struct MoreView: View {
         } footer: {
             Text("Nach jeder Änderung schreibt Toki „Toki-Sicherung.json“ und eine Datei pro Tag (30 Tage) in den Ordner. Eine leere App überschreibt nie eine vorhandene Sicherung.")
         }
+    }
+
+    /// Publisher credit at the bottom of the list. The wordmark is the outlined vector asset
+    /// from the brand guide (never typeset); the link target is localised (DE / EN site).
+    private var creditSection: some View {
+        Section {
+            if let url = URL(string: String(localized: "https://www.abrechen2.de/")) {
+                Link(destination: url) {
+                    VStack(spacing: 6) {
+                        Text("Ein Projekt von")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.secondaryText)
+                        Image("Abrechen2Wordmark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 128)
+                            .accessibilityLabel(Text(verbatim: "abrechen2"))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .accessibilityElement(children: .combine)
+                }
+                .accessibilityIdentifier("abrechen2Credit")
+            }
+        }
+        .listRowBackground(Color.clear)
     }
 
     private func handle(_ result: Result<URL, Error>, as purpose: FilePurpose) {

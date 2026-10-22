@@ -631,6 +631,16 @@
         }
       }
     },
+    "Ein Projekt von": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A project by"
+          }
+        }
+      }
+    },
     "Ein paar Angaben, dann rechnet Toki Überstunden und Resturlaub für dich. Alles lässt sich später unter Mehr → Job bearbeiten ändern.": {
       "localizations": {
         "en": {
@@ -2447,6 +2457,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "has entries"
+          }
+        }
+      }
+    },
+    "https://www.abrechen2.de/": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "https://www.abrechen2.de/en/"
           }
         }
       }
