@@ -25,6 +25,9 @@ public enum HoursFormat {
 
     /// Day counts: `38`, `1,5`.
     public static func days(_ value: Double) -> String {
+        guard value.isFinite else { return "–" }
+        // Int(Double) traps outside Int's range; such values are only possible from broken input.
+        if abs(value) >= 1e9 { return String(format: "%.0f", value) }
         if value == value.rounded() { return String(Int(value)) }
         return String(format: "%.1f", value).replacingOccurrences(of: ".", with: ",")
     }

@@ -19,6 +19,7 @@ final class AppStore {
 
     /// Increases with every saved change; drives the automatic backup.
     private(set) var revision = 0
+    @ObservationIgnored private var lastSaveFailed = false
     /// Short confirmation shown over the whole app ("Gespeichert"); survives closing a page.
     private(set) var toast: String?
     @ObservationIgnored private var toastTask: Task<Void, Never>?
@@ -63,6 +64,7 @@ final class AppStore {
     // MARK: Writing
 
     func showToast(_ text: String) {
+        guard !lastSaveFailed else { return }
         toast = text
         UIAccessibility.post(notification: .announcement, argument: text)
         toastTask?.cancel()
@@ -81,8 +83,7 @@ final class AppStore {
         } else {
             days[record.date] = record
         }
-        write(record, delete: isDefault)
-        persist()
+        transaction { try write(record, delete: isDefault) }
     }
 
     /// One-tap booking: adds a work entry with the schedule's default times.
@@ -105,13 +106,14 @@ final class AppStore {
 
     /// Adds a vacation entry to each date (planner already excluded days with entries).
     func bookVacation(_ dates: [LocalDate], note: String) {
+        var records: [DayRecord] = []
         for date in dates {
             var record = day(date)
             record.entries.append(TimeEntry(kind: .vacation, note: note))
             days[date] = record
-            write(record, delete: false)
+            records.append(record)
         }
-        persist()
+        transaction { for record in records { try write(record, delete: false) } }
     }
 
     /// Removes vacation entries between `start` and `end` (used to cancel a planned block).
@@ -131,30 +133,31 @@ final class AppStore {
 
     func saveSettings(_ new: Settings) {
         settings = new
-        do {
-            let data = try JSONEncoder().encode(new)
-            let existing = try context.fetch(FetchDescriptor<SettingsModel>())
-            if let model = existing.first {
-                model.json = data
-            } else {
-                context.insert(SettingsModel(json: data))
-            }
-        } catch {
-            lastError = error.localizedDescription
-        }
-        persist()
+        transaction { try writeSettings(new) }
     }
 
-    /// Merges imported days (same date replaced, credits kept) and optionally takes the import's settings.
+    /// Merges imported days (same date replaced, credits kept) and optionally takes the import's
+    /// settings — saved together, so a failure never leaves half an import.
     func applyImport(_ imported: MyTimeImport, takeSettings: Bool) {
         let merged = DayMerge.merge(existing: sortedDays, incoming: imported.days)
-        replaceDays(merged)
-        if takeSettings { saveSettings(imported.settings) }
+        days = Dictionary(merged.map { ($0.date, $0) }, uniquingKeysWith: { _, last in last })
+        if takeSettings { settings = imported.settings }
+        transaction {
+            try replaceDayModels(merged)
+            if takeSettings { try writeSettings(imported.settings) }
+        }
     }
 
+    /// Replaces everything in one save. Stays recorded before the restore belong to the old data;
+    /// keeping them would let the next location refresh overwrite restored automatic entries.
     func restore(_ snapshot: Snapshot) {
-        replaceDays(snapshot.days)
-        saveSettings(snapshot.settings)
+        days = Dictionary(snapshot.days.map { ($0.date, $0) }, uniquingKeysWith: { _, last in last })
+        settings = snapshot.settings
+        transaction {
+            try context.delete(model: VisitModel.self)
+            try replaceDayModels(snapshot.days)
+            try writeSettings(snapshot.settings)
+        }
     }
 
     var snapshot: Snapshot { Snapshot(settings: settings, days: sortedDays) }
@@ -254,25 +257,24 @@ final class AppStore {
         }
     }
 
-    private func replaceDays(_ records: [DayRecord]) {
-        do {
-            try context.delete(model: DayModel.self)
-        } catch {
-            lastError = error.localizedDescription
-        }
-        days = Dictionary(records.map { ($0.date, $0) }, uniquingKeysWith: { _, last in last })
+    private func replaceDayModels(_ records: [DayRecord]) throws {
+        try context.delete(model: DayModel.self)
         for record in records { insert(record) }
-        persist()
     }
 
-    private func write(_ record: DayRecord, delete: Bool) {
-        let key = record.date.iso
-        do {
-            let existing = try context.fetch(FetchDescriptor<DayModel>(predicate: #Predicate { $0.key == key }))
-            existing.forEach(context.delete)
-        } catch {
-            lastError = error.localizedDescription
+    private func writeSettings(_ new: Settings) throws {
+        let data = try JSONEncoder().encode(new)
+        if let model = try context.fetch(FetchDescriptor<SettingsModel>()).first {
+            model.json = data
+        } else {
+            context.insert(SettingsModel(json: data))
         }
+    }
+
+    /// A failed lookup throws instead of inserting a duplicate next to the old day.
+    private func write(_ record: DayRecord, delete: Bool) throws {
+        let key = record.date.iso
+        try context.fetch(FetchDescriptor<DayModel>(predicate: #Predicate { $0.key == key })).forEach(context.delete)
         if !delete { insert(record) }
     }
 
@@ -283,12 +285,33 @@ final class AppStore {
         model.entries = record.entries.enumerated().map { EntryModel($1, order: $0) }
     }
 
+    /// Runs all changes of one action and saves them together, or none of them.
+    private func transaction(_ changes: () throws -> Void) {
+        do {
+            try changes()
+        } catch {
+            fail(error)
+            return
+        }
+        persist()
+    }
+
     private func persist() {
-        revision += 1
         do {
             try context.save()
+            lastSaveFailed = false
+            revision += 1
         } catch {
-            lastError = error.localizedDescription
+            fail(error)
         }
+    }
+
+    /// Rolls back unsaved changes and reloads memory from the store, so the UI never shows data
+    /// that is not saved; no confirmation and no backup follow.
+    private func fail(_ error: Error) {
+        lastSaveFailed = true
+        lastError = String(localized: "Speichern fehlgeschlagen: \(error.localizedDescription)")
+        context.rollback()
+        load()
     }
 }

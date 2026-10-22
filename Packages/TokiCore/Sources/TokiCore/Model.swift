@@ -149,7 +149,10 @@ public struct WeekSchedule: Codable, Hashable, Sendable {
         let template = days[date.weekday]
             ?? [2, 3, 4, 5, 6, 7, 1].lazy.compactMap { days[$0] }.first
             ?? DayTemplate(targetSeconds: 28800, startSeconds: 30600, endSeconds: 59400)
-        return TimeEntry(kind: .work, startSeconds: template.startSeconds, endSeconds: template.endSeconds,
+        // A night template (22:00–06:00) ends on the next day; an explicit next-day end (e.g. 32:00
+        // from a myTime import) is kept as it is.
+        let end = template.endSeconds < template.startSeconds ? template.endSeconds + 86400 : template.endSeconds
+        return TimeEntry(kind: .work, startSeconds: template.startSeconds, endSeconds: end,
                          breakSeconds: template.breakSeconds)
     }
 

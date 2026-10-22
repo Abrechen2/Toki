@@ -37,12 +37,12 @@ struct SettingsView: View {
                 }
                 Section {
                     LabeledContent("Urlaubstage pro Jahr") {
-                        TextField("30", value: binding(\.entitlementPerYear), format: .number)
+                        TextField("30", value: bounded(\.entitlementPerYear, 0...366), format: .number)
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                     }
                     LabeledContent("Anfängliche Urlaubstage") {
-                        TextField("0", value: binding(\.anchor.value), format: .number)
+                        TextField("0", value: bounded(\.anchor.value, -10_000...10_000), format: .number)
                             .keyboardType(.numbersAndPunctuation)
                             .multilineTextAlignment(.trailing)
                     }
@@ -75,9 +75,20 @@ struct SettingsView: View {
         Binding(get: { (draft ?? store.settings)[keyPath: path] }, set: { draft?[keyPath: path] = $0 })
     }
 
+    /// Accepts only finite values inside the range; anything else keeps the previous value.
+    private func bounded(_ path: WritableKeyPath<Settings, Double>, _ range: ClosedRange<Double>) -> Binding<Double> {
+        Binding(get: { (draft ?? store.settings)[keyPath: path] },
+                set: { value in if value.isFinite && range.contains(value) { draft?[keyPath: path] = value } })
+    }
+
     private var hoursBinding: Binding<Double> {
         Binding(get: { Double((draft ?? store.settings).initialOvertimeSeconds) / 3600 },
-                set: { draft?.initialOvertimeSeconds = Int(($0 * 3600).rounded()) })
+                set: { hours in
+                    // Ignore impossible input instead of trapping in Int(Double).
+                    if let seconds = Safe.seconds(hours: hours, limitHours: 100_000, allowNegative: true) {
+                        draft?.initialOvertimeSeconds = seconds
+                    }
+                })
     }
 }
 

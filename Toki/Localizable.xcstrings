@@ -1641,6 +1641,16 @@
         }
       }
     },
+    "Speichern fehlgeschlagen: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving failed: %@"
+          }
+        }
+      }
+    },
     "Stand am Ende von": {
       "localizations": {
         "en": {

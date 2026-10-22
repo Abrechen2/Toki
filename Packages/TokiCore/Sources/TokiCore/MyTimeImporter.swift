@@ -146,8 +146,14 @@ public enum MyTimeImporter {
         }
         // Start within two days of the day, end within four, break at most a day: anything else
         // is a broken file and would overflow later.
-        guard let startSeconds = Safe.seconds(interval: start.timeIntervalSince(midnight), in: 0...(2 * 86400 - 1)),
-              let endSeconds = Safe.seconds(interval: end.timeIntervalSince(midnight), in: 0...(4 * 86400)),
+        // Wall-clock seconds like LocationDay, so DST days keep their clock times (08:00 stays 08:00).
+        guard start.timeIntervalSince(midnight) >= 0, end.timeIntervalSince(midnight) < 5 * 86400 else {
+            warnings.append("\(date.german): Eintrag mit unmöglichen Zeiten übersprungen")
+            return nil
+        }
+        let startSeconds = LocationDay.seconds(of: start, from: date, calendar: berlin)
+        let endSeconds = LocationDay.seconds(of: end, from: date, calendar: berlin)
+        guard (0..<(2 * 86400)).contains(startSeconds), (0...(4 * 86400)).contains(endSeconds),
               let breaks = breakSeconds(raw["breakEntries_value"]) else {
             warnings.append("\(date.german): Eintrag mit unmöglichen Zeiten übersprungen")
             return nil

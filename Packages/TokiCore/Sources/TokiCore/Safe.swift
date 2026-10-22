@@ -28,7 +28,8 @@ enum Limits {
     static let maxAdjustmentSeconds = 1000 * 3600
 
     static func isValid(_ settings: Settings) -> Bool {
-        guard abs(settings.initialOvertimeSeconds) <= maxOvertimeSeconds,
+        // Ranges, not abs(): abs(Int.min) traps.
+        guard (-maxOvertimeSeconds...maxOvertimeSeconds).contains(settings.initialOvertimeSeconds),
               settings.anchor.value.isFinite, abs(settings.anchor.value) <= 10_000,
               settings.entitlementPerYear.isFinite, (0...366).contains(settings.entitlementPerYear),
               settings.schedule.days.allSatisfy({ (1...7).contains($0.key) && isValid($0.value) }) else { return false }
@@ -46,7 +47,8 @@ enum Limits {
     }
 
     static func isValid(_ record: DayRecord) -> Bool {
-        (0...day).contains(record.targetSeconds) && abs(record.adjustmentSeconds) <= maxAdjustmentSeconds
+        (0...day).contains(record.targetSeconds)
+            && (-maxAdjustmentSeconds...maxAdjustmentSeconds).contains(record.adjustmentSeconds)
             && record.entries.allSatisfy(isValid)
     }
 

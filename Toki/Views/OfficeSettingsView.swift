@@ -184,8 +184,7 @@ struct OfficeSettingsView: View {
         }
         var settings = store.settings
         settings.office = draft
-        store.saveSettings(settings)
-        location.apply(draft)
+        store.saveSettings(settings) // monitoring follows via TokiApp's onChange of the office
         store.showToast(String(localized: "Gespeichert"))
         dismiss()
     }

@@ -146,6 +146,8 @@ struct RootView: View {
             guard !Task.isCancelled else { return }
             autoBackup.backup(store.snapshot)
         }
+        // Any change of the office (editor, restore, switching off) reconfigures monitoring.
+        .onChange(of: store.settings.office) { _, office in location.apply(office) }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { autoBackup.backup(store.snapshot) }
             if phase == .active { location.verifyOpenStay() }
