@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4C1F00000000000000000010 /* TokiCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4C1F00000000000000000011 /* TokiCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4C1F00000000000000000020 /* Toki.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Toki.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C1F00000000000000000021 /* TokiCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TokiCore; path = Packages/TokiCore; sourceTree = "<group>"; };
+		4C1F00000000000000000120 /* TokiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TokiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXContainerItemProxy section */
+		4C1F00000000000000000150 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C1F00000000000000000080 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C1F00000000000000000060;
+			remoteInfo = Toki;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		4C1F00000000000000000030 /* Toki */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Toki;
+			sourceTree = "<group>";
+		};
+		4C1F00000000000000000130 /* TokiUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TokiUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4C1F00000000000000000040 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1F00000000000000000010 /* TokiCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1F00000000000000000140 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4C1F00000000000000000050 = {
+			isa = PBXGroup;
+			children = (
+				4C1F00000000000000000030 /* Toki */,
+				4C1F00000000000000000130 /* TokiUITests */,
+				4C1F00000000000000000021 /* TokiCore */,
+				4C1F00000000000000000051 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4C1F00000000000000000051 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4C1F00000000000000000020 /* Toki.app */,
+				4C1F00000000000000000120 /* TokiUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4C1F00000000000000000060 /* Toki */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C1F00000000000000000070 /* Build configuration list for PBXNativeTarget "Toki" */;
+			buildPhases = (
+				4C1F00000000000000000061 /* Sources */,
+				4C1F00000000000000000040 /* Frameworks */,
+				4C1F00000000000000000062 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4C1F00000000000000000030 /* Toki */,
+			);
+			name = Toki;
+			packageProductDependencies = (
+				4C1F00000000000000000011 /* TokiCore */,
+			);
+			productName = Toki;
+			productReference = 4C1F00000000000000000020 /* Toki.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4C1F00000000000000000160 /* TokiUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C1F00000000000000000170 /* Build configuration list for PBXNativeTarget "TokiUITests" */;
+			buildPhases = (
+				4C1F00000000000000000161 /* Sources */,
+				4C1F00000000000000000140 /* Frameworks */,
+				4C1F00000000000000000162 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4C1F00000000000000000151 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4C1F00000000000000000130 /* TokiUITests */,
+			);
+			name = TokiUITests;
+			productName = TokiUITests;
+			productReference = 4C1F00000000000000000120 /* TokiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4C1F00000000000000000080 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					4C1F00000000000000000060 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					4C1F00000000000000000160 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 4C1F00000000000000000060;
+					};
+				};
+			};
+			buildConfigurationList = 4C1F00000000000000000090 /* Build configuration list for PBXProject "Toki" */;
+			developmentRegion = de;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				de,
+				en,
+				Base,
+			);
+			mainGroup = 4C1F00000000000000000050;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4C1F00000000000000000012 /* XCLocalSwiftPackageReference "Packages/TokiCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4C1F00000000000000000051 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4C1F00000000000000000060 /* Toki */,
+				4C1F00000000000000000160 /* TokiUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4C1F00000000000000000062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1F00000000000000000162 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4C1F00000000000000000061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1F00000000000000000161 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4C1F00000000000000000151 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C1F00000000000000000060 /* Toki */;
+			targetProxy = 4C1F00000000000000000150 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4C1F00000000000000000091 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4C1F00000000000000000092 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4C1F00000000000000000071 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8R29PZL99;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Toki;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Toki erkennt, wann du im Büro ankommst und es verlässt, und trägt die Arbeitszeit automatisch ein.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Toki verwendet deinen Standort, um dein Büro festzulegen.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.denniswittke.Toki;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		4C1F00000000000000000072 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8R29PZL99;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Toki;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Toki erkennt, wann du im Büro ankommst und es verlässt, und trägt die Arbeitszeit automatisch ein.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Toki verwendet deinen Standort, um dein Büro festzulegen.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.denniswittke.Toki;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4C1F00000000000000000171 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8R29PZL99;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.denniswittke.TokiUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Toki;
+			};
+			name = Debug;
+		};
+		4C1F00000000000000000172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8R29PZL99;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.denniswittke.TokiUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Toki;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4C1F00000000000000000070 /* Build configuration list for PBXNativeTarget "Toki" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1F00000000000000000071 /* Debug */,
+				4C1F00000000000000000072 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C1F00000000000000000090 /* Build configuration list for PBXProject "Toki" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1F00000000000000000091 /* Debug */,
+				4C1F00000000000000000092 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C1F00000000000000000170 /* Build configuration list for PBXNativeTarget "TokiUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1F00000000000000000171 /* Debug */,
+				4C1F00000000000000000172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		4C1F00000000000000000012 /* XCLocalSwiftPackageReference "Packages/TokiCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/TokiCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C1F00000000000000000011 /* TokiCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TokiCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 4C1F00000000000000000080 /* Project object */;
+}
