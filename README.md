@@ -70,13 +70,16 @@ groups, so new files are picked up without editing the project file.
 ```bash
 cd Packages/TokiCore && swift test          # rules, runs on macOS (and Linux)
 
-xcodebuild test -project Toki.xcodeproj -scheme TokiUITests \
-  -destination "id=<simulator id>" -parallel-testing-enabled NO
+tools/ui-test.sh                             # UI tests in the simulator, prepared
 ```
 
 UI tests launch the app with `-uiTesting` (Debug only): an empty in-memory store.
-Location tests need location access for Toki in the simulator and a simulated
-location (`xcrun simctl location <simulator id> set <lat>,<lon>`). The geofence
+`tools/ui-test.sh` picks an iPhone simulator (or `TOKI_SIM=<id>`), grants Toki
+location access, sets a simulated location far from the test office and runs the
+suite serially (`-scheme Toki -parallel-testing-enabled NO`). Without that
+preparation the location tests (OfficeSetup, StaleStay) fail although the app is
+fine. Extra arguments go to `xcodebuild`, e.g.
+`tools/ui-test.sh -only-testing:TokiUITests/StaleStayUITests`. The geofence
 test moves the location from outside and runs only with
 `TEST_RUNNER_TOKI_GEOFENCE_TEST=1` (see `TokiUITests/GeofenceUITests.swift`).
 
