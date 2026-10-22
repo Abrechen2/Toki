@@ -111,6 +111,9 @@ enum TimeOfDay {
 }
 
 extension LocalDate {
+    /// Numeric date in the user's language (16.11.2026 / 11/16/2026); files keep the German form.
+    var display: String { date().formatted(date: .numeric, time: .omitted) }
+
     /// Bridge for SwiftUI DatePicker bindings.
     static func binding(_ source: Binding<LocalDate>) -> Binding<Date> {
         Binding(get: { source.wrappedValue.date() },

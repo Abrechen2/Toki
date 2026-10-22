@@ -73,7 +73,7 @@ struct QuickVacationView: View {
                     Text("Vorschau")
                 } footer: {
                     if let last = dates.last {
-                        Text("Resturlaub nach dem \(last.german): \(HoursFormat.days(store.vacationBalance(on: last) - Double(dates.count))) Tage")
+                        Text("Resturlaub nach dem \(last.display): \(HoursFormat.days(store.vacationBalance(on: last) - Double(dates.count))) Tage")
                     }
                 }
             }
@@ -108,7 +108,7 @@ private struct PlannedDayRow: View {
                 .font(.caption.bold())
                 .foregroundStyle(day.date.isWeekend ? Theme.weekend : Theme.secondaryText)
                 .frame(width: 32, alignment: .leading)
-            Text(day.date.german).font(.subheadline.monospacedDigit())
+            Text(day.date.display).font(.subheadline.monospacedDigit())
             Spacer()
             switch day.status {
             case .book:

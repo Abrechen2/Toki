@@ -12,6 +12,11 @@ final class AppStore {
     private(set) var days: [LocalDate: DayRecord] = [:]
     private(set) var settings: Settings = .default
     var lastError: String?
+    /// True on a fresh install until the first-launch assistant is finished or skipped by an import.
+    private(set) var needsOnboarding = false
+    @ObservationIgnored private var hasSavedSettings = false
+    static let onboardingDoneKey = "onboarding.done"
+
     /// Increases with every saved change; drives the automatic backup.
     private(set) var revision = 0
     /// Short confirmation shown over the whole app ("Gespeichert"); survives closing a page.
@@ -20,9 +25,16 @@ final class AppStore {
 
     @ObservationIgnored private let context: ModelContext
 
-    init(context: ModelContext) {
+    init(context: ModelContext, onboardingAllowed: Bool = true) {
         self.context = context
         load()
+        needsOnboarding = onboardingAllowed && !hasSavedSettings && days.isEmpty
+            && !UserDefaults.standard.bool(forKey: Self.onboardingDoneKey)
+    }
+
+    func completeOnboarding() {
+        UserDefaults.standard.set(true, forKey: Self.onboardingDoneKey)
+        needsOnboarding = false
     }
 
     // MARK: Reading
@@ -176,10 +188,11 @@ final class AppStore {
         applyLocation(on: date)
     }
 
-    /// Recomputes recent days, e.g. a day left open yesterday becomes "Ende fehlt".
+    /// Recomputes recent days, e.g. a day left open yesterday becomes "Ende fehlt". Days without
+    /// stored stays are left alone: their automatic entries may come from a restored backup.
     func refreshLocationDays(lookBack: Int = 7) {
         let today = LocalDate.today()
-        for offset in 0...lookBack { applyLocation(on: today.adding(days: -offset)) }
+        for offset in 0...lookBack { applyLocation(on: today.adding(days: -offset), onlyWithStays: true) }
     }
 
     /// Accepts an automatic entry as it is: it becomes a normal entry and is no longer touched.
@@ -191,8 +204,11 @@ final class AppStore {
     }
 
     /// Hand-made entries win: a day with any manual entry is never changed automatically.
-    private func applyLocation(on date: LocalDate) {
+    private func applyLocation(on date: LocalDate, onlyWithStays: Bool = false) {
         let visits = (try? context.fetch(FetchDescriptor<VisitModel>()))?.map(\.visit) ?? []
+        if onlyWithStays && !visits.contains(where: { LocalDate(date: $0.arrival, calendar: .current) == date }) {
+            return
+        }
         let computed = LocationDay.entry(for: date, visits: visits, now: Date(), calendar: .current,
                                          schedule: settings.schedule, region: settings.holidayRegion)
         var record = day(date)
@@ -228,6 +244,7 @@ final class AppStore {
     private func load() {
         do {
             if let model = try context.fetch(FetchDescriptor<SettingsModel>()).first {
+                hasSavedSettings = true
                 settings = try JSONDecoder().decode(Settings.self, from: model.json)
             }
             let records = try context.fetch(FetchDescriptor<DayModel>()).compactMap(\.record)

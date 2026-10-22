@@ -23,9 +23,26 @@ struct TokiApp: App {
         } catch {
             fatalError("SwiftData store could not be opened: \(error)")
         }
-        let store = AppStore(context: container.mainContext)
+        #if DEBUG
+        // UI tests skip the first-launch assistant unless they test it.
+        let onboarding = !inMemory || ProcessInfo.processInfo.arguments.contains("-onboarding")
+        if inMemory && onboarding { UserDefaults.standard.removeObject(forKey: AppStore.onboardingDoneKey) }
+        #else
+        let onboarding = true
+        #endif
+        let store = AppStore(context: container.mainContext, onboardingAllowed: onboarding)
         _store = State(initialValue: store)
         #if DEBUG
+        // UI tests: a day with an automatic entry but no stored stays, like after restoring a backup.
+        if inMemory, let iso = ProcessInfo.processInfo.environment["TOKI_RESTORED_AUTO_DAY"], let date = LocalDate(iso: iso) {
+            store.save(DayRecord(date: date, targetSeconds: 8 * 3600, entries: [
+                TimeEntry(kind: .work, startSeconds: 8 * 3600, endSeconds: 16 * 3600 + 1800, breakSeconds: 1800,
+                          origin: EntryOrigin(source: .location, uncertain: [])),
+            ]))
+        }
+        if inMemory, ProcessInfo.processInfo.environment["TOKI_DEMO"] == "1" {
+            DemoData.seed(into: store)
+        }
         if inMemory, let fake = ProcessInfo.processInfo.environment["TOKI_FAKE_VISITS"] {
             Self.injectVisits(fake, into: store)
         }
@@ -132,6 +149,9 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { autoBackup.backup(store.snapshot) }
             if phase == .active { location.verifyOpenStay() }
+        }
+        .fullScreenCover(isPresented: Binding(get: { store.needsOnboarding }, set: { _ in })) {
+            OnboardingView()
         }
         .alert("Fehler", isPresented: Binding(get: { store.lastError != nil }, set: { if !$0 { store.lastError = nil } })) {
             Button("OK", role: .cancel) {}

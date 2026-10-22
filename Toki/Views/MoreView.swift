@@ -140,7 +140,7 @@ struct MoreView: View {
         } catch is MyTimeImportError {
             message = String(localized: "Die Datei ist kein myTime-Backup.")
         } catch SnapshotError.invalidDay(let date) {
-            message = String(localized: "Die Sicherung enthält am \(date.german) unmögliche Werte und wurde nicht eingespielt.")
+            message = String(localized: "Die Sicherung enthält am \(date.display) unmögliche Werte und wurde nicht eingespielt.")
         } catch SnapshotError.invalidSettings {
             message = String(localized: "Die Einstellungen in der Sicherung enthalten unmögliche Werte. Die Sicherung wurde nicht eingespielt.")
         } catch {
@@ -160,7 +160,7 @@ struct MoreView: View {
     }
 }
 
-private struct ImportBox: Identifiable {
+struct ImportBox: Identifiable {
     let value: MyTimeImport
     let id = UUID()
 }
@@ -169,6 +169,8 @@ struct ImportPreviewView: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let imported: MyTimeImport
+    /// Called after a successful import (the first-launch assistant closes itself then).
+    var onImported: (() -> Void)? = nil
     @State private var takeSettings = true
 
     var body: some View {
@@ -177,7 +179,7 @@ struct ImportPreviewView: View {
             Form {
                 Section("Inhalt") {
                     if let first = summary.firstDate, let last = summary.lastDate {
-                        LabeledContent("Zeitraum", value: "\(first.german) – \(last.german)")
+                        LabeledContent("Zeitraum", value: "\(first.display) – \(last.display)")
                     }
                     LabeledContent("Tage", value: "\(summary.dayCount)")
                     LabeledContent("Einträge", value: "\(summary.entryCount)")
@@ -210,6 +212,8 @@ struct ImportPreviewView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Importieren") {
                         store.applyImport(imported, takeSettings: takeSettings)
+                        store.showToast(String(localized: "\(imported.summary.dayCount) Tage importiert"))
+                        onImported?()
                         dismiss()
                     }
                 }

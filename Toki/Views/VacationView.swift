@@ -56,7 +56,7 @@ struct VacationView: View {
                     ForEach(Array(credits), id: \.date) { line in
                         Button { selection = DaySelection(date: line.date) } label: {
                             HStack {
-                                Text(line.date.german).monospacedDigit()
+                                Text(line.date.display).monospacedDigit()
                                 Text(line.note).foregroundStyle(Theme.secondaryText).lineLimit(1)
                                 Spacer()
                                 Text("+1").foregroundStyle(Theme.positive)
@@ -74,7 +74,7 @@ struct VacationView: View {
                             HStack {
                                 Button { selection = DaySelection(date: candidate.date) } label: {
                                     VStack(alignment: .leading) {
-                                        Text("\(DateText.weekdayShort(candidate.date)) \(candidate.date.german)").monospacedDigit()
+                                        Text("\(DateText.weekdayShort(candidate.date)) \(candidate.date.display)").monospacedDigit()
                                         Text(candidate.reason == .weekendWork ? "Arbeit am Wochenende" : "Notiz erwähnt Urlaub")
                                             .font(.caption).foregroundStyle(Theme.secondaryText)
                                     }
@@ -102,7 +102,7 @@ struct VacationView: View {
                 }
             }
             .navigationTitle("Urlaubskonto")
-            .sheet(isPresented: $showQuickVacation) { QuickVacationView(start: .today()) }
+            .sheet(isPresented: $showQuickVacation) { QuickVacationView(start: Self.quickVacationStart) }
             .sheet(item: $selection) { DayEditorView(date: $0.date) }
             .alert("Gutschrift +1 Tag", isPresented: Binding(get: { creditDate != nil }, set: { if !$0 { creditDate = nil } })) {
                 TextField("Grund", text: $creditNote)
@@ -116,6 +116,18 @@ struct VacationView: View {
                 Text("Der Tag zählt danach 0 Überstunden.")
             }
         }
+    }
+
+    /// Today; the screenshot demo starts on next Monday so the preview shows a full week.
+    private static var quickVacationStart: LocalDate {
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["TOKI_DEMO"] == "1" {
+            var day = LocalDate.today().adding(days: 1)
+            while day.weekday != 2 { day = day.adding(days: 1) }
+            return day
+        }
+        #endif
+        return .today()
     }
 
     /// Newest first; vacation days folded into blocks.
@@ -147,9 +159,9 @@ private struct HistoryRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 if let end = item.end, end != item.date {
-                    Text("\(item.date.german) – \(end.german)").monospacedDigit()
+                    Text("\(item.date.display) – \(end.display)").monospacedDigit()
                 } else {
-                    Text(item.date.german).monospacedDigit()
+                    Text(item.date.display).monospacedDigit()
                 }
                 Text(subtitle).font(.caption).foregroundStyle(Theme.secondaryText).lineLimit(1)
             }
@@ -179,7 +191,7 @@ private struct BlockRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(block.start.german) – \(block.end.german)").monospacedDigit()
+                Text("\(block.start.display) – \(block.end.display)").monospacedDigit()
                 if !block.note.isEmpty {
                     Text(block.note).font(.caption).foregroundStyle(Theme.secondaryText)
                 }

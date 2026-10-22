@@ -71,6 +71,16 @@
         }
       }
     },
+    "%lld Tage importiert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days imported"
+          }
+        }
+      }
+    },
     "%lld Urlaubstage eingetragen": {
       "localizations": {
         "en": {
@@ -281,12 +291,32 @@
         }
       }
     },
+    "Arbeitszeit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Working time"
+          }
+        }
+      }
+    },
     "Aus": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Off"
+          }
+        }
+      }
+    },
+    "Aus myTime importieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import from myTime"
           }
         }
       }
@@ -431,6 +461,16 @@
         }
       }
     },
+    "Der Import übernimmt deine Einträge und Einstellungen aus einem myTime-Backup.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The import takes your entries and settings from a myTime backup."
+          }
+        }
+      }
+    },
     "Der Tag behält sein Soll; ohne Arbeitszeit wird es vom Überstundenkonto abgezogen.": {
       "localizations": {
         "en": {
@@ -497,6 +537,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "These values should match the myTime app. Credits are added afterwards."
+          }
+        }
+      }
+    },
+    "Ein paar Angaben, dann rechnet Toki Überstunden und Resturlaub für dich. Alles lässt sich später unter Mehr → Job bearbeiten ändern.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A few details, then Toki calculates your overtime and vacation balance. You can change everything later under More → Edit job."
           }
         }
       }
@@ -891,6 +941,16 @@
         }
       }
     },
+    "Import nicht möglich": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import not possible"
+          }
+        }
+      }
+    },
     "Importieren": {
       "localizations": {
         "en": {
@@ -1087,6 +1147,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reads a .mytimebackup file. You see a summary first; matching days are replaced, credits are kept."
+          }
+        }
+      }
+    },
+    "Los geht's": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's go"
           }
         }
       }
@@ -1371,6 +1441,16 @@
         }
       }
     },
+    "Pause nach Arbeitszeitgesetz: %@. Unterschiedliche Tage stellst du später unter Standardwerte ein.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break required by the German Working Time Act: %@. Set different days later under Default values."
+          }
+        }
+      }
+    },
     "Radius: %lld m": {
       "localizations": {
         "en": {
@@ -1501,6 +1581,16 @@
         }
       }
     },
+    "Soll pro Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target per day"
+          }
+        }
+      }
+    },
     "Soll und Korrektur": {
       "localizations": {
         "en": {
@@ -1607,6 +1697,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starting value"
+          }
+        }
+      }
+    },
+    "Startwerte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting values"
           }
         }
       }
@@ -1841,6 +1941,16 @@
         }
       }
     },
+    "Willkommen bei Toki": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Toki"
+          }
+        }
+      }
+    },
     "Wochenende/Feiertag": {
       "localizations": {
         "en": {
@@ -1937,6 +2047,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "off"
+          }
+        }
+      }
+    },
+    "h": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "h"
           }
         }
       }
@@ -2107,6 +2227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Overtime month"
+          }
+        }
+      }
+    },
+    "Überstunden heute": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overtime today"
           }
         }
       }
