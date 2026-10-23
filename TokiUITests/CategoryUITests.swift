@@ -20,7 +20,8 @@ final class CategoryUITests: XCTestCase {
         XCTAssertEqual(app.switches["categoryCounts"].value as? String, "0")
         app.buttons["saveCategory"].tap()
 
-        // 2. Today: quick workday 08:00–16:30 in "Schweiz".
+        // 2. Today: quick workday with the default times (Friday 5 h, other days 8 h) in "Schweiz".
+        let hours = Calendar.current.component(.weekday, from: Date()) == 6 ? "5h 00m" : "8h 00m"
         app.tabBars.buttons["Monat"].tap()
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -31,7 +32,7 @@ final class CategoryUITests: XCTestCase {
 
         // 3. Labelled, counted apart, overtime account untouched.
         XCTAssertTrue(app.staticTexts["Schweiz"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["8h 00m getrennt"].exists)
+        XCTAssertTrue(app.staticTexts["\(hours) getrennt"].exists)
         let account = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS '0h 00m'")).firstMatch
         XCTAssertTrue(account.exists, "overtime account must stay at 0h 00m")
         if let dir = ProcessInfo.processInfo.environment["SCREENSHOT_DIR"] {
@@ -42,7 +43,7 @@ final class CategoryUITests: XCTestCase {
         app.tabBars.buttons["Export"].tap()
         app.buttons["exportCategory"].tap()
         app.buttons["Schweiz"].tap()
-        let total = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS '8h 00m'")).firstMatch
+        let total = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", hours)).firstMatch
         XCTAssertTrue(total.waitForExistence(timeout: 5))
         app.buttons["exportPDF"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["shareExport"].waitForExistence(timeout: 5))

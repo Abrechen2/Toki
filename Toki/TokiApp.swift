@@ -52,16 +52,24 @@ struct TokiApp: App {
         if inMemory, let fake = ProcessInfo.processInfo.environment["TOKI_FAKE_VISITS"] {
             Self.injectVisits(fake, into: store)
         }
-        // UI tests: office "lat,lon,radius" instead of the settings screen.
+        // UI tests: office "lat,lon,radius[,notify]" instead of the settings screen.
         if inMemory, let office = ProcessInfo.processInfo.environment["TOKI_OFFICE"]?.split(separator: ",").compactMap({ Double($0) }),
-           office.count == 3 {
+           office.count >= 3 {
             var settings = store.settings
             settings.office = OfficeLocation(latitude: office[0], longitude: office[1], radius: office[2],
-                                             name: "Test", notify: false)
+                                             name: "Test", notify: office.count > 3 && office[3] == 1,
+                                             // With messages on, the place counts as set up a minute ago.
+                                             since: office.count > 3 ? Date().addingTimeInterval(-60) : nil)
             store.saveSettings(settings)
         }
         #endif
-        _location = State(initialValue: LocationService(store: store))
+        let location = LocationService(store: store)
+        _location = State(initialValue: location)
+        #if DEBUG
+        if inMemory, let events = ProcessInfo.processInfo.environment["TOKI_REGION_EVENTS"] {
+            location.simulateRegionEvents(events.split(separator: ",").map(String.init))
+        }
+        #endif
         #if DEBUG
         if inMemory {
             // UI tests: own defaults, optional backup folder instead of the document picker.
@@ -127,6 +135,16 @@ struct RootView: View {
             MoreView()
                 .tabItem { Label("Mehr", systemImage: "ellipsis.circle") }
         }
+        #if DEBUG
+        .overlay(alignment: .bottomLeading) {
+            if ProcessInfo.processInfo.arguments.contains("-uiTesting") {
+                Color.clear.frame(width: 1, height: 1)
+                    .accessibilityElement()
+                    .accessibilityIdentifier("sentMessages")
+                    .accessibilityValue("\(location.sentMessages)")
+            }
+        }
+        #endif
         .overlay(alignment: .top) {
             if let toast = store.toast {
                 Label(toast, systemImage: "checkmark.circle.fill")

@@ -206,17 +206,23 @@ final class AppStore {
     // MARK: Automatic entries by location
 
     /// Geofence entered. A second arrival while a visit is open is ignored (duplicate event).
-    func recordArrival(at time: Date) {
-        if openVisit() != nil { return }
+    /// False when a stay is already open: iOS reports one arrival as both "entered" and "inside".
+    @discardableResult
+    func recordArrival(at time: Date) -> Bool {
+        if openVisit() != nil { return false }
         context.insert(VisitModel(arrival: time, departure: nil))
         applyLocation(on: LocalDate(date: time, calendar: .current))
+        return true
     }
 
     /// Geofence left: closes the open visit (if any) and updates that visit's day.
-    func recordDeparture(at time: Date) {
-        guard let open = openVisit() else { return }
+    /// False when no stay is open, e.g. the second report of the same departure.
+    @discardableResult
+    func recordDeparture(at time: Date) -> Bool {
+        guard let open = openVisit() else { return false }
         open.departure = time
         applyLocation(on: LocalDate(date: open.arrival, calendar: .current))
+        return true
     }
 
     var isAtOffice: Bool { openVisit() != nil }

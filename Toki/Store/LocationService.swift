@@ -21,6 +21,10 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     @ObservationIgnored private var setupRequested = false
     /// A location fix was requested to check whether an open stay is still real.
     @ObservationIgnored private var verificationPending = false
+    /// Messages handed to the system so far; UI tests check that one event gives one message.
+    private(set) var sentMessages = 0
+    /// UI tests that feed region events themselves ignore the simulator's own ones.
+    @ObservationIgnored private var ignoresSystemEvents = false
     static let regionID = "toki.office"
 
     init(store: AppStore) {
@@ -36,7 +40,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     /// The region state at launch is unreliable (often "unknown" right after monitoring restarts),
     /// so an open stay is checked against a real location fix.
     func verifyOpenStay() {
-        guard store?.isAtOffice == true, store?.settings.office != nil,
+        guard !ignoresSystemEvents, store?.isAtOffice == true, store?.settings.office != nil,
               authorization == .authorizedAlways || authorization == .authorizedWhenInUse else { return }
         verificationPending = true
         manager.requestLocation()
@@ -130,7 +134,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         guard let center = Self.center(of: region) else { return }
         let now = Date()
         Task { @MainActor in
-            if self.belongsToOffice(center) { self.arrived(at: now) }
+            if !self.ignoresSystemEvents { self.entered(center, at: now) }
         }
     }
 
@@ -138,7 +142,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         guard let center = Self.center(of: region) else { return }
         let now = Date()
         Task { @MainActor in
-            if self.belongsToOffice(center) { self.left(at: now) }
+            if !self.ignoresSystemEvents { self.exited(center, at: now) }
         }
     }
 
@@ -150,15 +154,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         guard let center = Self.center(of: region) else { return }
         let now = Date()
         Task { @MainActor in
-            guard self.belongsToOffice(center), let store = self.store else { return }
-            switch state {
-            case .inside:
-                if !store.isAtOffice { self.arrived(at: now) }
-            case .outside:
-                self.handleOutside(at: now)
-            default:
-                break
-            }
+            if !self.ignoresSystemEvents { self.determined(state, center, at: now) }
         }
     }
 
@@ -210,7 +206,47 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    #if DEBUG
+    /// UI tests: feeds region events the way a phone delivers them, e.g. "enter,inside" for one
+    /// arrival reported twice. The simulator's real position is ignored from then on.
+    func simulateRegionEvents(_ events: [String]) {
+        guard let office = store?.settings.office else { return }
+        ignoresSystemEvents = true
+        let center = CLLocationCoordinate2D(latitude: office.latitude, longitude: office.longitude)
+        let now = Date()
+        for event in events {
+            switch event {
+            case "enter": entered(center, at: now)
+            case "exit": exited(center, at: now)
+            case "inside": determined(.inside, center, at: now)
+            case "outside": determined(.outside, center, at: now)
+            default: break
+            }
+        }
+    }
+    #endif
+
     // MARK: Events
+
+    private func entered(_ center: CLLocationCoordinate2D, at time: Date) {
+        if belongsToOffice(center) { arrived(at: time) }
+    }
+
+    private func exited(_ center: CLLocationCoordinate2D, at time: Date) {
+        if belongsToOffice(center) { left(at: time) }
+    }
+
+    private func determined(_ state: CLRegionState, _ center: CLLocationCoordinate2D, at time: Date) {
+        guard belongsToOffice(center), let store else { return }
+        switch state {
+        case .inside:
+            if !store.isAtOffice { arrived(at: time) }
+        case .outside:
+            handleOutside(at: time)
+        default:
+            break
+        }
+    }
 
     /// Clearly outside the circle (radius plus measuring error) means the open stay is over.
     private func verify(with location: CLLocation) {
@@ -233,14 +269,13 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     private func arrived(at time: Date) {
-        guard let store else { return }
-        store.recordArrival(at: time)
+        // Only a newly recorded arrival is announced; the duplicate report stays silent.
+        guard let store, store.recordArrival(at: time) else { return }
         notify(String(localized: "Ankunft erfasst: \(time.formatted(date: .omitted, time: .shortened))"))
     }
 
     private func left(at time: Date) {
-        guard let store else { return }
-        store.recordDeparture(at: time)
+        guard let store, store.recordDeparture(at: time) else { return }
         let date = LocalDate(date: time, calendar: .current)
         let worked = Calculator.worked(store.day(date))
         notify(String(localized: "Verlassen erfasst: \(time.formatted(date: .omitted, time: .shortened)) · heute \(HoursFormat.plain(worked))"))
@@ -248,6 +283,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 
     private func notify(_ text: String) {
         guard store?.settings.office?.notify == true else { return }
+        sentMessages += 1
         let content = UNMutableNotificationContent()
         content.title = "Toki"
         content.body = text
