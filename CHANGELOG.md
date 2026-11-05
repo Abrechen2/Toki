@@ -60,6 +60,14 @@ Every TestFlight build of version 1.0, newest first. The build number is the
 build's start time in UTC (`YYYYMMDDhhmm`); each entry lists what changed since
 the previous build.
 
+### 202611051736 (2026-11-05)
+- Automatic entries (location, weekly-plan proposals, automatic breaks) no
+  longer warn on every day. The month close shows how many are still open and
+  confirms the whole month with "All checked – confirm". Uncertain location
+  days keep their hint on the day.
+- Month close: view the PDF as a preview before creating the statement, and
+  view the created version.
+
 ### 202610250854 (2026-10-25)
 - Quick entry: up to three presets on an empty day ("office day" from the
   weekly plan, "like the last workday", own presets), then adjust the end by
